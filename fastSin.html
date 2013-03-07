@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Untitled</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="Keyword" content="">
+    <meta name="Description" content="">
+    <style type="text/css">
+        #draw-target{
+            width:480px;
+            height:320px;
+            position:relative;
+            background:#333;
+        }
+    </style>
+</head>
+
+<body>
+<div id="draw-target">
+
+</div>
+<script type="text/javascript" src="./js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        var fastSin = function(steps){
+            var table = [],
+                ang = 0,
+                angStep = (Math.PI * 2)/steps;
+            do{
+                table.push(Math.sin(ang));
+                ang += angStep;
+            }while(ang < Math.PI * 2);
+            return table;
+        }
+        var sinTable = fastSin(4096),
+            $draw = $('#draw-target'),
+            divs = '',
+            i,
+            bars,
+            x = 0;
+
+        for(i = 0; i < 480; i++){
+            divs += '<div style="position:absolute;width:1px;height:40px;background:#0d0;top:0px;left:' + i + 'px"></div>';
+        }
+        $draw.append(divs);
+        bars = $draw.children();
+        var drawGraph = function(ang, freq, height){
+            var height2 = height * 2;
+            for(var i = 0; i < 480; i++){
+                bars[i].style.top = 160 - height + sinTable[(ang + (i * freq)) & 4095] * height + 'px';
+                bars[i].style.height = height2 + 'px';
+            }
+        }
+        setInterval(function(){
+            drawGraph(x * 50, 32 - (sinTable[(x * 2) & 4095] * 16), 50 - (sinTable[(x * 10) & 4095] * 20));
+            x++;
+        },20);
+    });
+</script>
+</body>
+</html>
