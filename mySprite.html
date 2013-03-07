@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <title>New Html file</title>
+    <style type="text/css">
+        .draw{
+            height: 400px;
+            width: 600px;
+            position: relative;
+            background: #95b3ff;
+            border: 1px solid #CCC;
+        }
+    </style>
+</head>
+<body>
+    <div class="draw"></div>
+    <script type="text/javascript" src="./js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="./js/sea.js" data-config="config"></script>
+    <script type="text/javascript">
+        $(function(){
+            var options = {
+                imgUrl: './image/cogs.png',
+                imgWidth: 256,
+                box: $('.draw'),
+                maxX: 536,
+                maxY: 336
+            };
+            seajs.use('DHTMLGraph', function(DG){
+                var group1 = createObj(50);
+                var group2 = createObj(20);
+                setInterval(function(){
+                    DG.Animate(group1);
+                }, 30);
+                setInterval(function(){
+                    DG.Animate(group2, true);
+                }, 10);
+
+                function createObj(count){
+                    var temp = [];
+                    for(var j = 0; j < count; j++){
+                        temp.push(DG.CreateElem(options, {
+                            size: 64,
+                            x: Math.random() * 536,
+                            y: Math.random() * 336,
+                            xDir: Math.random() * 4 - 2,
+                            yDir: Math.random() * 4 - 2,
+                            indexRange: [1, 5]
+                        }));
+                    }
+                    return temp;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
