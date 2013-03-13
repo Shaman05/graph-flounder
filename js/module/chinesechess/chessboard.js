@@ -33,10 +33,10 @@
         },
 
         createChess: function(camp, chess){
-            var map = this.boardArr;
-            var offsetX = baseSize/2 + 10;
-            var offsetY = baseSize/2 + 10;
-            if(camp === 'black'){
+            var map = data.boardMap;
+            drawNumber(camp);
+
+            if(camp === 'black'){ //如果是黑棋，则需要反转棋盘
                 map.reverse();
             }
             for(var y = 0, len = map.length; y < len; y++){
@@ -44,26 +44,33 @@
                 for(var x = 0, _len = arr.length; x < _len; x++){
                     if(arr[x]){
                         var fields = arr[x].split('_');
-                        new chess(fields[0], fields[1], offsetX + baseSize * x, offsetY + baseSize * y, chessSize, chessSize);
+                        new chess(fields[0], fields[1], x, y, chessSize, chessSize);
                     }
                 }
             }
+            //todo...
+            console.log(data.player.type);
+            console.log(data.player.canMove);
         },
 
         canvas: canvas,
 
-        boardArr: [
-            ["black_che" , "black_ma"  , "black_xiang" , "black_shi" , "black_jiang" , "black_shi" , "black_xiang" , "black_ma"  , "black_che"],
-            [null        , null        , null          , null        , null          , null        , null          , null        , null       ],
-            [null        , "black_pao" , null          , null        , null          , null        , null          , "black_pao" , null       ],
-            ["black_zu"  , null        , "black_zu"    , null        , "black_zu"    , null        , "black_zu"    , null        , "black_zu" ],
-            [null        , null        , null          , null        , null          , null        , null          , null        , null       ],
-            [null        , null        , null          , null        , null          , null        , null          , null        , null       ],
-            ["red_bing"  , null        , "red_bing"    , null        , "red_bing"    , null        , "red_bing"    , null        , "red_bing" ],
-            [null        , "red_pao"   , null          , null        , null          , null        , null          , "red_pao"   , null       ],
-            [null        , null        , null          , null        , null          , null        , null          , null        , null       ],
-            ["red_che"   , "red_ma"    , "red_xiang"   , "red_shi"   , "red_shuai"   , "red_shi"   , "red_xiang"   , "red_ma"    , "red_che"  ]
-        ]
+        selectedObj: null,
+
+        currentType: 'red',
+
+        recode: [],
+
+        realMap: function(){
+            var temp = [];
+            for(var y = 0; y < 10; y++){
+                temp[y] = [];
+                for(var x = 0; x < 9; x++){
+                    temp[y][x] = null;
+                }
+            }
+            return temp;
+        }()
 
     };
 
@@ -135,6 +142,27 @@
         var la1 = canvas.path('M' + X1 + ',' + Y1 + ',L' + X2 + ',' + Y2);
         var la2 = canvas.path('M' + X1 + ',' + Y2 + ',L' + X2 + ',' + Y1);
         canvas.set().push(la1,la2).attr(strokeStyle).clone().transform('t0,' + u7);
+    }
+
+    function drawNumber(camp){
+        var numArr = data.text.Num;
+        var topNum, bottomNum;
+        var numberStyle = data.style.number;
+        if(camp == 'red'){
+            topNum = numArr[0];
+            bottomNum = numArr[1];
+        }else{ //黑方数字反转
+            topNum = numArr[1].reverse();
+            bottomNum = numArr[0].reverse();
+        }
+        //顶部数字，并且须翻转
+        for(var i = 0; i < topNum.length; i++){
+            canvas.text(baseSize * (i + 1) + 5, baseSize - 25, topNum[i]).attr(numberStyle).transform('r180');
+        }
+        //底部数字，从右向左
+        for(var j = 0; j < bottomNum.length ; j++){
+            canvas.text(baseSize * (j + 1) + 5, u11 - 15, bottomNum[j]).attr(numberStyle);
+        }
     }
 
 });

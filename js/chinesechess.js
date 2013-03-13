@@ -15,7 +15,7 @@
         debug: true
     });
 
-    seajs.use(['chessboard','chess'], function(board, chess){
+    seajs.use(['chessboard','chess','data'], function(board, chess, data){
         board.init();
 
         panel.onclick = function(e){
@@ -30,6 +30,8 @@
             var radios = panel.getElementsByTagName('input');
             radios[0].disabled = true;
             radios[1].disabled = true;
+            data.player.type = camp;
+            data.player.canMove = (camp == 'red');
             board.createChess(camp, chess);
         }
     });
