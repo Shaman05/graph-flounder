@@ -3,10 +3,37 @@
 <head>
     <meta charset="utf-8">
     <title>ChineseChess</title>
+    <style type="text/css">
+        .chessBoard{position: absolute;}
+        .rightPanel{height: 460px; width: 200px; position: absolute; top: 50px; right: 25px;}
+        .row{text-align: right;}
+        .row h4{margin-bottom: 2px}
+        .recode select{width: 160px;}
+    </style>
 </head>
 <body>
-<div id="chessBoard"></div>
+<div id="chessBoard" class="chessBoard">
+    <div id="panel" class="rightPanel">
+        <div class="row gameType">
+            <h4><label for="gameType">请选择游戏类型：</label></h4>
+            <select name="gameType" id="gameType">
+                <option value="0" selected>自由对战</option>
+                <option value="1">联机对战</option>
+                <option value="2">残局演练</option>
+            </select>
+        </div>
+        <div class="row type">
+            <h4>请选择方阵：</h4>
+            <label for="redType">红方</label><input type="radio" name="type" id="redType" value="red" checked/>
+            <label for="blackType">黑方</label><input type="radio" name="type" id="blackType" value="black"/>
+        </div>
+        <div class="row recode">
+            <h4><label for="recode">棋谱记录：</label></h4>
+            <select name="recode" id="recode" multiple size="8"></select>
+        </div>
+    </div>
+</div>
 <script type="text/javascript" src="./js/raphael-min.js"></script>
-<script type="text/javascript" src="./js/sea.js" data-main="init"></script>
+<script type="text/javascript" src="./js/sea.js" data-main="chinesechess"></script>
 </body>
 </html>

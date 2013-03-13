@@ -1,18 +1,14 @@
 /**
- * Created with JetBrains WebStorm.
- * User: Shaman
- * Date: 13-3-12
- * Time: 下午9:59
+ * Created with JetBrains PhpStorm.
+ * User: Devin Chen
+ * Date: 3/8/13
+ * Time: 10:26 AM
  * To change this template use File | Settings | File Templates.
  */
 
 ;define(function(require, exports, module){
 
-    var data = require('./data');
-
-
     module.exports = {
 
     }
-
 });

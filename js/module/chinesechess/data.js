@@ -11,28 +11,28 @@
     module.exports = {
         pieces: {
             size: 50,
-            imagePath: '/images/',
-            redPrefix: 'red_',
-            blackPrefix: 'black_'
+            imagePath: './image/'
         },
         style: {
             bgColor: '#D1BF9A',
             stroke: {
                 "stroke": "black",
-                "stroke-width":.3,
-                "fill": "none"
+                "stroke-width": .3
             },
             outLine: {
                 "stroke-width": 1
+            },
+            shortLine: {
+                "stroke-width": .8
             },
             limit: {
                 "fill": "#d1bf9a"
             },
             text: {
                 "stroke": "#333333",
-                "stroke-width":.5,
+                "stroke-width": .5,
                 "font-size": 28,
-                "font-family": "黑体",
+                "font-family": "宋体",
                 "fill": "#585040"
             }
         },

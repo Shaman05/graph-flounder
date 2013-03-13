@@ -108,6 +108,22 @@
             while(len --){
                 objArr[len].move(_isCrash);
             }
+        },
+
+        /**
+         * sine 的查找表
+         * @param steps 粒度(最低4095, 增大粒度能获得更平滑的效果)
+         * @return {Array}
+         */
+        fastSin: function(steps){
+            var table = [],
+                ang = 0,
+                angStep = (Math.PI * 2)/steps;
+            do{
+                table.push(Math.sin(ang));
+                ang += angStep;
+            }while(ang < Math.PI * 2);
+            return table;
         }
     }
 });
