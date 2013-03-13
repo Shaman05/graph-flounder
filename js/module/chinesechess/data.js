@@ -40,6 +40,22 @@
             number: {
                 "font-size": 14,
                 "font-family": "宋体"
+            },
+            vRectUnit: {
+                "fill": "#d1bf9a",
+                "fill-opacity": 0,
+                "cursor": "pointer",
+                "stroke": "green",
+                "stroke-width": .5,
+                "stroke-dasharray": "--",
+                "stroke-opacity": 0
+            },
+            rectUnit: {
+                "fill" : "#d1bf9a",
+                "fill-opacity" : 0,
+                "cursor" : "pointer",
+                "stroke" : "green",
+                "stroke-width" : .5
             }
         },
 

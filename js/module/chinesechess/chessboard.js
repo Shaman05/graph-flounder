@@ -22,6 +22,9 @@
     var u10 = baseSize * 10;
     var u11 = baseSize * 11;
     var u14 = baseSize * 14;
+    var offsetX = baseSize/2 + 10;
+    var offsetY = baseSize/2 + 10;
+    var style = data.style;
 
     //创建画布
     var canvas = Raphael('chessBoard', u10, u11);
@@ -42,6 +45,7 @@
             for(var y = 0, len = map.length; y < len; y++){
                 var arr = map[y];
                 for(var x = 0, _len = arr.length; x < _len; x++){
+                    this.createRectLayer(offsetX + baseSize * x, offsetY + baseSize * y);
                     if(arr[x]){
                         var fields = arr[x].split('_');
                         new chess(fields[0], fields[1], x, y, chessSize, chessSize);
@@ -53,6 +57,10 @@
             console.log(data.player.canMove);
         },
 
+        rectUnit: function(){
+            return canvas.rect(10, 10, baseSize - 10, baseSize - 10).attr(style.rectUnit).hide();
+        }(),
+
         canvas: canvas,
 
         selectedObj: null,
@@ -60,6 +68,10 @@
         currentType: 'red',
 
         recode: [],
+
+        createRectLayer: function(px, py){
+            var vRect = canvas.rect(px, py, chessSize, chessSize).attr(style.vRectUnit);
+        },
 
         realMap: function(){
             var temp = [];
@@ -85,7 +97,6 @@
         box.style.marginLeft = - u14/2 + 'px';
         var dx = u1 + 5;
         var dy = u1 + 5;
-        var style = data.style;
         var strokeStyle = style.stroke;
         var text = data.text;
 

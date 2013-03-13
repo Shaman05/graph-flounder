@@ -9,6 +9,9 @@
 ;(function(){
 
     var panel = $('panel');
+    var viewer = $('viewer');
+    var red = $('red');
+    var black = $('black');
 
     seajs.config({
         base: './js/module/chinesechess/',
@@ -17,6 +20,12 @@
 
     seajs.use(['chessboard','chess','data'], function(board, chess, data){
         board.init();
+
+        $('gameType').selectedIndex = 0;
+        viewer.disabled = false;
+        viewer.checked = true;
+        red.disabled = false;
+        black.disabled = false;
 
         panel.onclick = function(e){
             var evt = e || window.event;
@@ -27,9 +36,9 @@
         };
 
         function composition(camp){
-            var radios = panel.getElementsByTagName('input');
-            radios[0].disabled = true;
-            radios[1].disabled = true;
+            viewer.disabled = true;
+            red.disabled = true;
+            black.disabled = true;
             data.player.type = camp;
             data.player.canMove = (camp == 'red');
             board.createChess(camp, chess);

@@ -9,6 +9,7 @@
 ;define(function(require, exports, module){
 
     var board = require('./chessboard');
+    var rectUnit = board.rectUnit;
     var canvas = board.canvas;
     var realMap = board.realMap;
     var data = require('./data');
@@ -22,15 +23,18 @@
         this.name = name;
         this.x = x;
         this.y = y;
+        this.id = null;
         this.init();
     }
 
     Chess.prototype = {
         init: function(){
+            var _this = this;
             var imgUrl = imgPath + this.type + '_' + this.name + '.png';
             var offsetX = baseSize/2 + 10;
             var offsetY = baseSize/2 + 10;
-            var chess = canvas.image(imgUrl, offsetX + baseSize * this.x, offsetY + baseSize * this.y, this.size, this.size);
+            var chess = canvas.image(imgUrl, offsetX + baseSize * this.x, offsetY + baseSize * this.y, this.size, this.size).attr('cursor','pointer');
+            this.id = chess.id;
             if(this.y < 5){ //对手棋子反转
                 chess.transform('r180');
             }
@@ -38,13 +42,21 @@
             chess.data('type',this.type);
             chess.data('name',this.name);
             chess.click(function(){
-                board.selectedObj = this;
+                console.log(board.selectedObj && board.selectedObj.id === this.id);
+                //board.selectedObj = this;
+                //console.log(this.id, board.selectedObj.id);
+                board.selectedObj = board.selectedObj && board.selectedObj.id === this.id ? null : this;
                 if(data.player.type != board.currentType){
                     alert('轮到对方走棋！');
+                }else{
+                    if(_this.type == data.player.type)
+                        rectUnit.show().attr({x:offsetX + baseSize * _this.x,y:offsetY + baseSize * _this.y});
+                    //console.log(this.id, board.selectedObj);
+                    if(board.selectedObj && this.id === board.selectedObj.id)
+                        rectUnit.hide();
                 }
                 //todo...
             });
-            realMap[this.y][this.x] = chess;
         }
     };
 
