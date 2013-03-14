@@ -38,24 +38,26 @@
             if(this.y < 5){ //对手棋子反转
                 chess.transform('r180');
             }
+            chess.toFront();
             chess.data('posit',{x:this.x,y:this.y});
-            chess.data('type',this.type);
-            chess.data('name',this.name);
             chess.click(function(){
-                console.log(board.selectedObj && board.selectedObj.id === this.id);
-                //board.selectedObj = this;
-                //console.log(this.id, board.selectedObj.id);
-                board.selectedObj = board.selectedObj && board.selectedObj.id === this.id ? null : this;
+                var _self = this;
                 if(data.player.type != board.currentType){
                     alert('轮到对方走棋！');
                 }else{
-                    if(_this.type == data.player.type)
-                        rectUnit.show().attr({x:offsetX + baseSize * _this.x,y:offsetY + baseSize * _this.y});
-                    //console.log(this.id, board.selectedObj);
-                    if(board.selectedObj && this.id === board.selectedObj.id)
-                        rectUnit.hide();
+                    var toPoint = {x:_self.attr("x"),y:_self.attr("y")};
+                    if(_this.type == data.player.type){ //选棋
+                        rectUnit.show().attr(toPoint).toFront();
+                        board.selectedObj = _self;
+                    }else{ //吃子
+                        board.selectedObj.animate(toPoint,300,function(){
+                            //todo : send message
+
+                            board.resetRectUnit();
+                            _self.remove();
+                        });
+                    }
                 }
-                //todo...
             });
         }
     };

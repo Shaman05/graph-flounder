@@ -52,14 +52,19 @@
                     }
                 }
             }
-            //todo...
-            console.log(data.player.type);
-            console.log(data.player.canMove);
+            //todo : set player's type from server
+            //console.log(data.player.type);
+            //console.log(data.player.canMove);
         },
 
         rectUnit: function(){
             return canvas.rect(10, 10, baseSize - 10, baseSize - 10).attr(style.rectUnit).hide();
         }(),
+
+        resetRectUnit: function(){
+            this.selectedObj = null;
+            this.rectUnit.hide();
+        },
 
         canvas: canvas,
 
@@ -69,8 +74,32 @@
 
         recode: [],
 
+        writeRecode: function(){
+
+        },
+
         createRectLayer: function(px, py){
+            var board = this;
             var vRect = canvas.rect(px, py, chessSize, chessSize).attr(style.vRectUnit);
+            vRect.hover(function(){
+                if(board.selectedObj){
+                    this.attr('stroke-opacity',1);
+                }
+            },function(){
+                this.attr('stroke-opacity',0);
+            });
+            vRect.click(function(){ //走位
+                if(board.selectedObj){
+                    var _this = this;
+                    var toPoint = {x:_this.attr("x"),y:_this.attr("y")};
+                    board.selectedObj.animate(toPoint,300,function(){
+                        //todo : send message
+
+                        board.resetRectUnit();
+                        _this.attr('stroke-opacity',0);
+                    });
+                }
+            });
         },
 
         realMap: function(){
