@@ -2,14 +2,18 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title><%= title %></title>
+    <title><%=title %></title>
     <style type="text/css">
+        body{margin: 0; background: url(./images/bg.jpg)}
         .chessBoard{position: absolute;}
         .rightPanel{height: 460px; width: 200px; position: absolute; top: 50px; right: 25px; font-size: 14px;}
         .row{text-align: right; margin-bottom: 10px;}
         .row h4,.chat p{margin: 0;}
         .recode select{width: 160px;}
-        .chat .textarea{width: 160px; height: 160px; display: inline-block; text-align: left; line-height: 15px; resize: none; font-size: 12px; overflow: auto; background: #FFFFFF; border: 1px solid #999999}
+        .textarea{width: 160px; height: 160px; display: inline-block; text-align: left; line-height: 15px; resize: none; font-size: 12px; overflow: auto; background: #FFFFFF; border: 1px solid #999999}
+        .normal{color: black}
+        .tip{color: green}
+        .error{color: red}
         .input input{height: 14px; line-height: 14px; width: 100px;}
     </style>
 </head>
@@ -44,7 +48,9 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="./javascripts/raphael-min.js"></script>
-<script type="text/javascript" src="./javascripts/sea.js" data-main="chinesechess"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="/javascripts/raphael-min.js"></script>
+<script type="text/javascript" src="/javascripts/jquery-min.js"></script>
+<script type="text/javascript" src="/javascripts/sea.js" data-main="chinesechess"></script>
 </body>
 </html>
