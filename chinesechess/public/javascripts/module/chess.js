@@ -43,7 +43,7 @@
             chess.click(function(){
                 var _self = this;
                 if(data.player.type != board.currentType){
-                    alert('轮到对方走棋！');
+                    board.msg('轮到对方走棋！', 'sys', 'error');
                 }else{
                     var toPoint = {x:_self.attr("x"),y:_self.attr("y")};
                     if(_this.type == data.player.type){ //选棋
@@ -55,6 +55,7 @@
 
                             board.resetRectUnit();
                             _self.remove();
+                            board.swapType();
                         });
                     }
                 }

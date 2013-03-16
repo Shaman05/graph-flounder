@@ -9,7 +9,8 @@
 ;(function(){
 
     var $panel = $('#panel');
-    var $msgBox = $('#chatBox');
+    var $sendBtn = $('#sendBtn');
+    var $input = $('#input');
 
     seajs.config({
         base: './javascripts/module/',
@@ -17,49 +18,75 @@
     });
 
     seajs.use(['chessboard','chess','data'], function(board, chess, data){
+        //init
         board.init();
-
         $('#gameType').attr('selectedIndex', 0);
         $('#viewer,#red,#black').attr('disabled', false);
         $('#viewer').attr('checked', true);
 
-        $panel.click(function(e){
-            var _this = $(e.target);
-            if(_this.attr('type') == 'radio'){
-                composition(_this.val());
+        //socket
+        var socket = io.connect();
+        board.msg('正在连接服务器，请稍后...', 'sys', 'tip');
+        socket.on('connect', function(){
+            board.msg('已连接！', 'sys', 'tip');
+            $sendBtn.attr('disabled', false);
+        });
+        socket.on('disconnect', function(){
+            board.msg('连接已断开！', 'sys', 'error');
+            $sendBtn.attr('disabled', true);
+        });
+        socket.on('join', function(data){
+            board.msg(data.id + ' 加入了游戏！', 'sys', 'tip');
+        });
+        socket.on('logout', function(data){
+            board.msg(data.id + ' 退出了游戏！', 'sys', 'tip');
+        });
+        socket.on('speak', function(data){
+            board.msg(' 说：' + data.text, data.id, 'user');
+        });
+        socket.on('choose-type', function(camp){
+            console.log(camp);
+            if(camp !== "viewer"){
+                //todo : 由系统分配持棋颜色
+                data.player.type = camp;
+                data.player.canMove = (camp == 'red');
+                board.createChess(camp, chess);
+            }else{ //观看者默认以红棋视角观看，并且禁止走棋
+                data.player.type = 'red';
+                data.player.canMove = false;
+                board.createChess('red', chess);
             }
         });
 
-        function composition(camp){
-            $('#viewer,#red,#black').attr('disabled', true);
-            $msgBox.prepend('<p class="tip">正在连接服务器，请稍后...</p>');
+        //event
+        $panel.click(function(e){
+            var _this = $(e.target);
+            if(_this.attr('type') == 'radio'){
+                $('#viewer,#red,#black').attr('disabled', true);
+                sendMessage({
+                    action: 'choose-type',
+                    type: _this.val()
+                });
+            }
+        });
 
-            var socket = io.connect();
-            socket.on('connect', function(){
-                $msgBox.prepend('<p class="tip">已连接！</p>');
-                socket.emit('choose-type', camp);
+        $sendBtn.click(function(){
+            var text = $.trim($input.val());
+            //todo : 过滤内容
+            text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            if(!text)return;
+            sendMessage({
+                action: 'speak',
+                text: text
             });
-            socket.on('choose-type', function(data){
-                console.log(data);
-                if(camp !== "viewer"){
-                    //todo : 由系统分配持棋颜色
+            board.msg(' 说：' + text, '你', 'user');
+        });
 
-                    data.player.type = camp;
-                    data.player.canMove = (camp == 'red');
-                    board.createChess(camp, chess);
-                }else{ //观看者默认以红棋视角观看，并且禁止走棋
-                    data.player.type = 'red';
-                    data.player.canMove = false;
-                    board.createChess('red', chess);
-                }
-            });
-            socket.on('message', function(data){
-                console.log(data);
-            });
-            socket.on('disconnect', function(){
-                $msgBox.prepend('<p class="error">连接已断开！</p>');
-            });
+        function sendMessage(data){
+            socket.send(JSON.stringify(data));
+            $input.val('');
         }
+
     });
 
 })();

@@ -22,9 +22,11 @@
     var u10 = baseSize * 10;
     var u11 = baseSize * 11;
     var u14 = baseSize * 14;
+    var u17 = baseSize * 17;
     var offsetX = baseSize/2 + 10;
     var offsetY = baseSize/2 + 10;
     var style = data.style;
+    var $msgBox = $('#chatBox');
 
     //创建画布
     var canvas = Raphael('chessBoard', u10, u11);
@@ -97,9 +99,14 @@
 
                         board.resetRectUnit();
                         _this.attr('stroke-opacity',0);
+                        board.swapType();
                     });
                 }
             });
+        },
+
+        swapType: function(){
+            this.currentType = this.currentType == 'red' ? 'black' : 'red';
         },
 
         realMap: function(){
@@ -111,19 +118,30 @@
                 }
             }
             return temp;
-        }()
+        }(),
+
+        msg: function(text, name, type){
+            if(typeof text !== 'string')return;
+            if(name === 'sys'){
+                $msgBox.prepend('<p class="' + type + '">【系统】' + text + '</p>');
+            }else{
+                $msgBox.prepend('<p class="user">【' + name + '】' + text + '</p>');
+            }
+            $msgBox.scrollTop(0);
+        }
 
     };
 
     function drawBoard(u1){
-        var box = document.getElementById('chessBoard');
-        box.style.height = u11 + 'px';
-        box.style.width = u14 + 'px';
-        box.style.backgroundColor = data.style.bgColor;
-        box.style.top = '50%';
-        box.style.left = '50%';
-        box.style.marginTop = - u11/2 + 'px';
-        box.style.marginLeft = - u14/2 + 'px';
+        $('#chessBoard').css({
+            height: u11 + 'px',
+            width: u17 + 'px',
+            backgroundColor: data.style.bgColor,
+            top: '50%',
+            left: '50%',
+            marginTop: - u11/2 + 'px',
+            marginLeft: - u14/2 + 'px'
+        });
         var dx = u1 + 5;
         var dy = u1 + 5;
         var strokeStyle = style.stroke;
