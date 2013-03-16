@@ -8,6 +8,7 @@
 
 ;define(function(require, exports, module){
 
+    var help = require('./help');
     var board = require('./chessboard');
     var rectUnit = board.rectUnit;
     var canvas = board.canvas;
@@ -43,7 +44,7 @@
             chess.click(function(){
                 var _self = this;
                 if(data.player.type != board.currentType){
-                    board.msg('轮到对方走棋！', 'sys', 'error');
+                    help.msg('轮到对方走棋！', 'sys', 'error');
                 }else{
                     var toPoint = {x:_self.attr("x"),y:_self.attr("y")};
                     if(_this.type == data.player.type){ //选棋

@@ -9,6 +9,7 @@
 ;define(function(require, exports, module){
 
     var data = require('./data');
+    var help = require('./help');
     var baseSize = data.pieces.size;
     var chessSize = baseSize - 10;
     var u2 = baseSize * 2;
@@ -26,7 +27,6 @@
     var offsetX = baseSize/2 + 10;
     var offsetY = baseSize/2 + 10;
     var style = data.style;
-    var $msgBox = $('#chatBox');
 
     //创建画布
     var canvas = Raphael('chessBoard', u10, u11);
@@ -118,17 +118,7 @@
                 }
             }
             return temp;
-        }(),
-
-        msg: function(text, name, type){
-            if(typeof text !== 'string')return;
-            if(name === 'sys'){
-                $msgBox.prepend('<p class="' + type + '">【系统】' + text + '</p>');
-            }else{
-                $msgBox.prepend('<p class="user">【' + name + '】' + text + '</p>');
-            }
-            $msgBox.scrollTop(0);
-        }
+        }()
 
     };
 
