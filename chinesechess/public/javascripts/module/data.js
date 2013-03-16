@@ -86,7 +86,10 @@
             [null        , "red_pao"   , null          , null        , null          , null        , null          , "red_pao"   , null       ],
             [null        , null        , null          , null        , null          , null        , null          , null        , null       ],
             ["red_che"   , "red_ma"    , "red_xiang"   , "red_shi"   , "red_shuai"   , "red_shi"   , "red_xiang"   , "red_ma"    , "red_che"  ]
-        ]
+        ],
+
+        //记录列表，只保存当前正在进行的棋局
+        recode: []
     };
 
 });

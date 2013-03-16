@@ -40,23 +40,19 @@
         createChess: function(camp, chess){
             var map = data.boardMap;
             drawNumber(camp);
-
             if(camp === 'black'){ //如果是黑棋，则需要反转棋盘
                 map.reverse();
             }
             for(var y = 0, len = map.length; y < len; y++){
                 var arr = map[y];
                 for(var x = 0, _len = arr.length; x < _len; x++){
-                    this.createRectLayer(offsetX + baseSize * x, offsetY + baseSize * y);
+                    this.createRectLayer(x, y);
                     if(arr[x]){
                         var fields = arr[x].split('_');
                         new chess(fields[0], fields[1], x, y, chessSize, chessSize);
                     }
                 }
             }
-            //todo : set player's type from server
-            //console.log(data.player.type);
-            //console.log(data.player.canMove);
         },
 
         rectUnit: function(){
@@ -74,15 +70,16 @@
 
         currentType: 'red',
 
-        recode: [],
+        /*recode: [],
 
         writeRecode: function(){
 
-        },
+        },*/
 
-        createRectLayer: function(px, py){
+        createRectLayer: function(x, y){
             var board = this;
-            var vRect = canvas.rect(px, py, chessSize, chessSize).attr(style.vRectUnit);
+            var vRect = canvas.rect(offsetX + baseSize * x, offsetY + baseSize * y, chessSize, chessSize).attr(style.vRectUnit);
+            vRect.data('posit',{x:x, y:y});
             vRect.hover(function(){
                 if(board.selectedObj){
                     this.attr('stroke-opacity',1);
@@ -93,10 +90,17 @@
             vRect.click(function(){ //走位
                 if(board.selectedObj){
                     var _this = this;
-                    var toPoint = {x:_this.attr("x"),y:_this.attr("y")};
-                    board.selectedObj.animate(toPoint,300,function(){
+                    var startPoint = board.selectedObj.data('posit');
+                    var endPoint = _this.data('posit');
+                    var toPosit = {x:_this.attr("x"),y:_this.attr("y")};
+                    board.selectedObj.animate(toPosit,300,function(){
                         //todo : send message
 
+                        //更新棋子位置
+                        board.selectedObj.data('posit', endPoint);
+                        //写记录
+                        help.writeStep(board.currentType, board.selectedObj.data('name'),startPoint, endPoint);
+                        //重置
                         board.resetRectUnit();
                         _this.attr('stroke-opacity',0);
                         board.swapType();

@@ -18,7 +18,8 @@ function start(server){
         //添加到在线列表
         userList.length ++;
         userList[socket.id] = {
-            id: socket.id
+            id: socket.id,
+            name: null
         };
 
         //有新用户加入广播, 并发送新的用户列表
@@ -29,6 +30,7 @@ function start(server){
 
         //message事件
         socket.on('message', function(data){
+            console.log('......' + data);
             var d = JSON.parse(data);
             actionMap[d.action](d);  //映射用户动作
         });
@@ -68,9 +70,19 @@ function start(server){
             },
 
             'speak': function(data){
+                var name = userList[socket.id].name;
                 socket.broadcast.emit('speak', {
-                    id: socket.id,
+                    id: name || socket.id,
                     text: filterHtml(data.text)
+                });
+            },
+
+            'rename': function(data){
+                var name = userList[socket.id].name;
+                userList[socket.id].name = data.name;  //修改用户名
+                socket.broadcast.emit('rename', {
+                    id: name || socket.id,
+                    newName: data.name
                 });
             }
         };

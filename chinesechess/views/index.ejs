@@ -7,16 +7,17 @@
         body{margin: 0; background: url(./images/bg.jpg)}
         .chessBoard{position: absolute; box-shadow: 0 0 7px #9f9f9f; border-radius: 5px;}
         .rightPanel{height: 460px; width: 325px; position: absolute; top: 50px; right: 25px; font-size: 14px;}
-        .row{margin-bottom: 10px;}
+        .row{margin-bottom: 6px;}
         .row h4,.chat p{margin: 0;}
-        .recode select{width: 160px;}
+        .recode select{width: 160px; font-weight: bold;}
         .textarea{height: 160px; text-align: left; line-height: 15px; resize: none; font-size: 12px; overflow: auto; background: #FFFFFF; border: 1px solid #999999}
-        .normal{color: black;}
-        .tip{color: green;}
-        .error{color: red;}
+        .normal,.black{color: black;}
+        .tip,.help{color: green;}
+        .error,.red{color: red;}
         .user{color: blue;}
         .input input[type=text]{width: 240px;}
         .input input[type=button]{width: 78px;}
+        .help{margin:0 6px; padding: 6px 0 6px 12px; border: 1px dashed green;}
     </style>
 </head>
 <body>
@@ -45,7 +46,7 @@
             </div>
         </div>
         <div class="row input">
-            <input type="text" name="input" id="input" placeholder="说点什么..."/><input type="button" id="sendBtn" value="发送消息" disabled />
+            <input title="输入 -help 可以查看一些隐藏的命令哦 :)" type="text" name="input" id="input" placeholder="说点什么..."/><input type="button" id="sendBtn" value="发送消息" disabled />
         </div>
     </div>
 </div>

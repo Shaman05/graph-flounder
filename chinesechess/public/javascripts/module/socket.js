@@ -43,8 +43,10 @@
             socket.on('speak', function(data){
                 help.msg(' 说：' + data.text, data.id, 'user');
             });
+            socket.on('rename', function(data){
+                help.msg(data.id + ' 已改名为：' + data.newName, 'sys', 'tip');
+            });
             socket.on('choose-type', function(camp){
-                console.log(camp);
                 if(camp !== "viewer"){
                     //todo : 由系统分配持棋颜色
                     data.player.type = camp;
@@ -58,7 +60,21 @@
             });
         },
 
-        sendData: function(data){
+        sendMessage: function(data){
+            var cmd = data.text;
+            switch (cmd){
+                case '-help':
+                    help.showHelp();
+                    break;
+                case '-clear':
+                    help.clear();
+                    break;
+                default :
+                    sendMessage(data);
+            }
+        },
+
+        sendAction: function(data){
             socket.send(JSON.stringify(data));
         },
 
@@ -67,5 +83,21 @@
         }
 
     };
+
+    function sendMessage(data){
+        var text = data.text;
+        var newData= {};
+        var regExp = /^-rename [0-9a-zA-Z]{1,8}$/;
+        if(regExp.test(text)){
+            newData.action = 'rename';
+            newData.name = regExp.exec(text)[0].split(' ')[1];
+            socket.send(JSON.stringify(newData));
+            help.msg(' 您已经改名为：' + newData.name, 'sys', 'tip');
+        }else{
+            socket.send(JSON.stringify(data));
+            help.msg(' 说：' + text, '你', 'user');
+        }
+
+    }
 
 });

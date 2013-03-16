@@ -41,6 +41,7 @@
             }
             chess.toFront();
             chess.data('posit',{x:this.x,y:this.y});
+            chess.data('name', this.name);
             chess.click(function(){
                 var _self = this;
                 if(data.player.type != board.currentType){

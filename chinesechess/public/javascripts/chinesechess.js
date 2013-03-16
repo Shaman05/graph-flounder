@@ -30,7 +30,7 @@
             var _this = $(e.target);
             if(_this.attr('type') == 'radio'){
                 help.disableRadio();
-                socket.sendData({
+                socket.sendAction({
                     action: 'choose-type',
                     type: _this.val()
                 });
@@ -40,14 +40,17 @@
             var text = $.trim($input.val());
             if(!text)return;
             text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            socket.sendData({
+            socket.sendMessage({
                 action: 'speak',
                 text: text
             });
-            help.msg(' 说：' + text, '你', 'user');
             $input.val('');
         });
-
+        $input.keyup(function(e){
+            if(e.keyCode === 13){
+                $sendBtn.click();
+            }
+        });
     });
 
 })();
