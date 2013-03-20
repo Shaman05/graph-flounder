@@ -10,9 +10,8 @@
 
     var data = require('./data');
     var help = require('./help');
-    var board = require('./chessboard');
-    var chess = require('./chess');
     var $sendBtn = $('#sendBtn');
+    var $input = $('#input');
 
     //创建客户端socket
     var socket = io.connect();
@@ -31,6 +30,7 @@
             socket.on('disconnect', function(){
                 help.msg('连接已断开！', 'sys', 'error');
                 $sendBtn.attr('disabled', true);
+                $input.unbind();
             });
             socket.on('join', function(data){
                 help.msg(data.id + ' 加入了游戏！', 'sys', 'tip');

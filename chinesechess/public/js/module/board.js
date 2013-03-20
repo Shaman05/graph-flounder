@@ -51,6 +51,7 @@
             createChessNode();
             help.printMap();
             socket.init();
+            event.init();
         }
 
     };
