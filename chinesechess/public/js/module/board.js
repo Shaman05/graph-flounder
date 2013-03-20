@@ -1,16 +1,25 @@
 /**
  * Created with JetBrains WebStorm.
  * User: Shaman
- * Date: 13-3-12
- * Time: 下午10:15
+ * Date: 13-3-17
+ * Time: 下午3:35
  * To change this template use File | Settings | File Templates.
  */
 
 ;define(function(require, exports, module){
 
+    'use strict';
+
     var data = require('./data');
     var help = require('./help');
-    var baseSize = data.pieces.size;
+    var event = require('./event');
+    var canvas = require('./paper');
+    var socket = require('./socket');
+
+    var map = data.map;
+    var chess = data.chess;
+    var camp = data.player.type;
+    var baseSize = 50;
     var chessSize = baseSize - 10;
     var u2 = baseSize * 2;
     var u3 = baseSize * 3;
@@ -28,101 +37,21 @@
     var offsetY = baseSize/2 + 10;
     var style = data.style;
 
-    //创建画布
-    var canvas = Raphael('chessBoard', u10, u11);
-
     module.exports = {
 
         init: function(){
             drawBoard(baseSize);
-        },
-
-        createChess: function(camp, chess){
-            var map = data.boardMap;
-            drawNumber(camp);
-            if(camp === 'black'){ //如果是黑棋，则需要反转棋盘
+            event.panelEvent();
+            //todo : 由系统返回用户身份
+            //如果当前玩家是黑色则翻转棋盘
+            if(camp === 'black'){
                 map.reverse();
             }
-            for(var y = 0, len = map.length; y < len; y++){
-                var arr = map[y];
-                for(var x = 0, _len = arr.length; x < _len; x++){
-                    this.createRectLayer(x, y);
-                    if(arr[x]){
-                        var fields = arr[x].split('_');
-                        new chess(fields[0], fields[1], x, y, chessSize, chessSize);
-                    }
-                }
-            }
-        },
-
-        rectUnit: function(){
-            return canvas.rect(10, 10, baseSize - 10, baseSize - 10).attr(style.rectUnit).hide();
-        }(),
-
-        resetRectUnit: function(){
-            this.selectedObj = null;
-            this.rectUnit.hide();
-        },
-
-        canvas: canvas,
-
-        selectedObj: null,
-
-        currentType: 'red',
-
-        /*recode: [],
-
-        writeRecode: function(){
-
-        },*/
-
-        createRectLayer: function(x, y){
-            var board = this;
-            var vRect = canvas.rect(offsetX + baseSize * x, offsetY + baseSize * y, chessSize, chessSize).attr(style.vRectUnit);
-            vRect.data('posit',{x:x, y:y});
-            vRect.hover(function(){
-                if(board.selectedObj){
-                    this.attr('stroke-opacity',1);
-                }
-            },function(){
-                this.attr('stroke-opacity',0);
-            });
-            vRect.click(function(){ //走位
-                if(board.selectedObj){
-                    var _this = this;
-                    var startPoint = board.selectedObj.data('posit');
-                    var endPoint = _this.data('posit');
-                    var toPosit = {x:_this.attr("x"),y:_this.attr("y")};
-                    board.selectedObj.animate(toPosit,300,function(){
-                        //todo : send message
-
-                        //更新棋子位置
-                        board.selectedObj.data('posit', endPoint);
-                        //写记录
-                        help.writeStep(board.currentType, board.selectedObj.data('name'),startPoint, endPoint);
-                        //重置
-                        board.resetRectUnit();
-                        _this.attr('stroke-opacity',0);
-                        board.swapType();
-                    });
-                }
-            });
-        },
-
-        swapType: function(){
-            this.currentType = this.currentType == 'red' ? 'black' : 'red';
-        },
-
-        realMap: function(){
-            var temp = [];
-            for(var y = 0; y < 10; y++){
-                temp[y] = [];
-                for(var x = 0; x < 9; x++){
-                    temp[y][x] = null;
-                }
-            }
-            return temp;
-        }()
+            drawNumber();
+            createChessNode();
+            help.printMap();
+            socket.init();
+        }
 
     };
 
@@ -196,7 +125,41 @@
         canvas.set().push(la1,la2).attr(strokeStyle).clone().transform('t0,' + u7);
     }
 
-    function drawNumber(camp){
+    function createChessNode(){
+        for(var i = 0, len = map.length; i < len; i++){
+            for(var j = 0, _len = map[i].length; j < _len; j++){
+                var vRect, cNode;
+                vRect = canvas.rect(offsetX + baseSize * j, offsetY + baseSize * i, chessSize, chessSize)
+                                .attr(style.vRectUnit)
+                                .data('posit',{x:j, y:i});
+                vRect.click(event.vRectClick);
+                //vRect.hover(event.vRectMouseOn, event.vRectMouseOut);
+                var item = map[i][j];
+                if(item){
+                    var en = chess[item].en;
+                    var imgUrl = '';
+                    //红棋
+                    if(item < 20){
+                        imgUrl = './image/red_' + en + '.png';
+                    }
+                    //黑棋
+                    if(item > 20){
+                        imgUrl = './image/black_' + en + '.png';
+                    }
+                    cNode = canvas.image(imgUrl, offsetX + baseSize * j, offsetY + baseSize * i, chessSize, chessSize)
+                                    .attr('cursor','pointer')
+                                    .toFront()
+                                    .data('code',item);
+                    cNode.click(event.chessClick);
+                    //cNode.hover(event.chessMouseOn, event.chessMouseOut);
+                    //对手棋子需翻转
+                    i < 5 && cNode.transform('r180');
+                }
+            }
+        }
+    }
+
+    function drawNumber(){
         var numArr = data.text.Num;
         var topNum, bottomNum;
         var numberStyle = data.style.number;

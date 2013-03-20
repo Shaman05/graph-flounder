@@ -46,7 +46,10 @@
             socket.on('rename', function(data){
                 help.msg(data.id + ' 已改名为：' + data.newName, 'sys', 'tip');
             });
-            socket.on('choose-type', function(camp){
+            socket.on('choose-type', function(resData){
+                var camp = resData.type;
+                help.msg(resData.message, 'sys', 'tip');
+                console.log(camp);
                 if(camp !== "viewer"){
                     //todo : 由系统分配持棋颜色
                     data.player.type = camp;
@@ -57,6 +60,9 @@
                     data.player.canMove = false;
                     board.createChess('red', chess);
                 }
+            });
+            socket.on('other-choose-type', function(resData){
+                help.msg(resData.message, 'sys', 'tip');
             });
         },
 
@@ -78,8 +84,13 @@
             socket.send(JSON.stringify(data));
         },
 
-        playerSocket: function(){
-            //todo ...
+        player: {
+            move: function(){
+
+            },
+            eat: function(){
+
+            }
         }
 
     };

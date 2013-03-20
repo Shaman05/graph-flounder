@@ -8,10 +8,18 @@
 
 ;define(function(require, exports, module){
 
+    'use strict';
+
+    var data = require('./data');
+
     var $msgBox = $('#chatBox');
     var $gameTypeSelect = $('#gameType');
     var $radios = $('#viewer,#red,#black');
     var $recode = $('#recode');
+    var $realMap = $('#realMap');
+    var baseSize = 50;
+    var offsetX = baseSize/2 + 10;
+    var offsetY = baseSize/2 + 10;
 
     module.exports = {
 
@@ -53,7 +61,6 @@
                 'red': '红方',
                 'black': '黑方'
             };
-            console.log(p1, p2);
             var stepStr = this.transformNum(camp, name, p1, p2);
             $('<option class="' + camp + '">[' + campMap[camp] + ']:' + stepStr + '</option>').prependTo($recode);
         },
@@ -93,7 +100,8 @@
             realName = map[camp].name[name];
             start = map[camp].num[p1.x];
             end = map[camp].num[p2.x];
-            var r = map.red.num.reverse();
+            var r = map[camp].num;
+            (camp == 'red') && r.reverse();
             if(p1.y === p2.y)
                 direction = '平';
             if(p1.y < p2.y){
@@ -109,6 +117,44 @@
 
 
             return realName + start + direction + end;
+        },
+
+        updateMap: function(points){
+            data.map[points.y1][points.x1] = 0;
+            data.map[points.y2][points.x2] = data.selectedObj.data('code');
+        },
+
+        printMap: function(obj){
+            var map = data.map;
+            var buffer = [];
+            buffer.push('<table>');
+            for(var i = 0, len = map.length; i < len; i++){
+                buffer.push('<tr>');
+                var row = map[i];
+                for(var j = 0, _len = row.length; j < _len; j++){
+                    buffer.push('<td>');
+                    buffer.push(row[j]);
+                    buffer.push('</td>');
+                }
+                buffer.push('</tr>');
+            }
+            $realMap.html(buffer.join(''));
+            this.highLightCell(obj);
+        },
+
+        highLightCell: function(obj){
+            var point = this.transformPoint(obj);
+            $realMap.find('.current').removeClass('current');
+            $realMap.find('tr:eq(' + point.y1 + ')').find('td:eq(' + point.x1 + ')').addClass('current');
+        },
+
+        transformPoint: function(p1, p2){
+            return {
+                x1: p1 && Math.floor((p1.attr('x') - offsetX)/baseSize),
+                y1: p1 && Math.floor((p1.attr('y') - offsetY)/baseSize),
+                x2: p2 && Math.floor((p2.attr('x') - offsetX)/baseSize),
+                y2: p2 && Math.floor((p2.attr('y') - offsetY)/baseSize)
+            };
         }
 
     };
