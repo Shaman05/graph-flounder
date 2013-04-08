@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>文字逐个显示</title>
+</head>
+<body>
+    <div class="demo" id="demo1">
+        <p>风，清凉凉，吹得落叶“哗哗”。想起后背岭，曾种满马尾松，风起时便会发出凄凉的呼啸，让人禁不止打冷战……这些儿时的记忆碎片，每每一闪而过，往往怅然若失。</p>
+        <p>好有太阳。懒懒的阳光，淡淡的阳光，轻轻地飘洒在这片土地之上。远处，一只白色的小蝴蝶在晨曦里跳动，我以为这是仙子的化身。</p>
+    </div>
+    <div class="demo" id="demo2">
+        <p>2风，清凉凉，吹得落叶“哗哗”。想起后背岭，曾种满马尾松，风起时便会发出凄凉的呼啸，让人禁不止打冷战……这些儿时的记忆碎片，每每一闪而过，往往怅然若失。</p>
+        <p>2幸好有太阳。懒懒的阳光，淡淡的阳光，轻轻地飘洒在这片土地之上。远处，一只白色的小蝴蝶在晨曦里跳动，我以为这是仙子的化身。</p>
+    </div>
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript">
+        $.textBlinkStack = [];
+        $.fn.textBlink = function(options){
+            var defaultSetting = {
+                blinkSpeed: 200,
+                startPlay: 1000
+            };
+            var opt = $.extend(defaultSetting, options);
+            return this.each(function(){
+                var that = $(this);
+                var temp = [];
+                var strBuffer = [];
+                var indexP = 0;
+                var timer = null;
+                that.find('>p').each(function(){
+                    var $p = $(this);
+                    temp.push($p.text());
+                    $p.empty();
+                });
+                $.each(temp, function(i, str){
+                    for(var j = 0, len = str.length; j < len; j++){
+                        strBuffer.push(str.charAt(j));
+                    }
+                    strBuffer.push('wait');
+                });
+                setTimeout(function(){
+                    timer = setInterval(play, opt.blinkSpeed);
+                }, opt.startPlay);
+                function play(){
+                    var text = strBuffer.shift();
+                    !text && clearInterval(timer);
+                    if(text === 'wait'){
+                        indexP++;
+                        return;
+                    }
+                    var $p = that.find('p').eq(indexP);
+                    $('<span style="display:none">' + text + '</span>').fadeIn(120).appendTo($p);
+                }
+            })
+        };
+
+        $('#demo1').textBlink();
+        $('#demo2').textBlink({startPlay:5000});
+    </script>
+</body>
+</html>
