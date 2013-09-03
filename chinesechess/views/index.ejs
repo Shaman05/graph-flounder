@@ -5,7 +5,7 @@
     <title>中国象棋(nodejs+socket.io+express)</title>
     <style type="text/css">
         body{margin: 0; background: url(/image/bg.jpg)}
-        .chessBoard{position: absolute; box-shadow: 0 0 7px #9f9f9f; border-radius: 5px;}
+        .chessBoard{width: 850px; height: 550px; position: absolute; top: 50%; left: 50%; margin: -275px 0 0 -350px; box-shadow: 0 0 7px #9f9f9f; border-radius: 5px; background: #D1BF9A}
         .rightPanel{height: 460px; width: 325px; position: absolute; top: 50px; right: 25px; font-size: 14px;}
         .row{margin-bottom: 6px;}
         .row h4,.chat p{margin: 0;}
@@ -24,6 +24,10 @@
         .realMap table tr{height: 18px;}
         .realMap table td{width: 18px; border: 1px solid #CCCCCC; text-align: center;}
         .current{background: blue; color: #FFFFFF;}
+        .player{height:50px; margin-bottom:10px; border-width:2px; border-style:solid; padding:4px 10px;}
+        .player button{width:80px; height:50px;}
+        .black-player{border-color:#353535;}
+        .red-player{border-color:#ea221e;}
     </style>
 </head>
 <body>
@@ -32,23 +36,33 @@
 </div>
 <div id="chessBoard" class="chessBoard">
     <div id="panel" class="rightPanel">
-        <div class="row gameType">
-            <h4><label for="gameType">请选择游戏类型</label></h4>
-            <select name="gameType" id="gameType" disabled>
-                <option value="0">自由演练</option>
-                <option value="1">残局演练</option>
-                <option value="2" selected>联机对战</option>
-            </select>
+        <div class="row" id="playerChoose">
+            <h4>玩家信息：</h4>
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <label for="nickName">输入昵称：</label>
+                        <input id="nickName" type="input" name="nickName" placeholder="起个酷一点的名字吧..." />
+                        <input type="button" value="Enter" id="enterBtn"/>
+                    </td>
+                </tr>
+                <tr id="playsInfo" style="display:none">
+                    <td>
+                        <div class="player black-player">
+                            <button id="blackBtn" value="black">选择黑方</button>
+                            <span>黑方：<span id="blackName"></span></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="player red-player">
+                            <button id="redBtn" value="red">选择红方</button>
+                            <span>红方：<span id="redName"></span></span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
-        <div class="row type">
-            <h4><label for="statusSelelet">请选择方阵</label></h4>
-            <select name="status" id="statusSelelet">
-                <option value="0" title="观看者模式">观看者</option>
-                <option value="1" title="挑战者将由系统分配执棋颜色">挑战者</option>
-            </select>
-            <span>您当前的身份：<strong id="status"></strong></span>
-        </div>
-        <div class="row recode">
+        <div class="row recode" style="display:none">
             <h4><label for="recode">棋谱记录</label></h4>
             <select name="recode" id="recode" multiple size="8"></select>
         </div>
@@ -63,7 +77,7 @@
     </div>
 </div>
 <audio controls="controls" preload="auto" loop="loop" id="music">
-    <source src="/media/ymq.ogg" type="audio/ogg">
+    <source src="/media/ymq.mp3" type="audio/ogg">
     Your browser does not support the audio tag.
 </audio>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>

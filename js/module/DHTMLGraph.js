@@ -124,6 +124,61 @@
                 ang += angStep;
             }while(ang < Math.PI * 2);
             return table;
+        },
+
+        /**
+         * 变频器（暂停器）
+         * @param goalFPS 目标FPS
+         * @returns {{getInfo: Function, pause: Function}}
+         */
+        timeInfo: function (goalFPS) {
+            var oldTime,
+                paused = true,
+                iterCount = 0,
+                totalFPS = 0,
+                totalCoeff = 0;
+            return {
+                /**
+                 * @returns {{
+                 *  elapsed: number, 从上次getInfo()调用开始的毫秒数
+                 *  coeff: number, 在移动和动画计算中所用的参数
+                 *  FPS: number, 从上次getInfo()起所达到的FPS
+                 *  averageFPS: number, 从上次getInfo()起所达到的平均FPS
+                 *  averageCoeff: number 平均参数
+                 *  }}
+                 */
+                getInfo: function () {
+                    if (paused === true) {
+                        paused = false;
+                        oldTime = +new Date();
+                        return {
+                            elapsed: 0,
+                            coeff: 0,
+                            FPS: 0,
+                            averageFPS: 0,
+                            averageCoeff: 0
+                        };
+                    }
+                    var newTime = +new Date();
+                    var elapsed = newTime - oldTime;
+                    oldTime = newTime;
+                    var FPS = 1000 / elapsed;
+                    iterCount++;
+                    totalFPS += FPS;
+                    var coeff = goalFPS / FPS;
+                    totalCoeff += coeff;
+                    return {
+                        elapsed: elapsed,
+                        coeff: coeff,
+                        FPS: FPS,
+                        averageFPS: totalFPS / iterCount,
+                        averageCoeff: totalCoeff / iterCount
+                    };
+                },
+                pause: function () {
+                    paused = true;
+                }
+            };
         }
     }
 });

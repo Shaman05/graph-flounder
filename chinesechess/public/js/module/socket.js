@@ -17,11 +17,12 @@
     var socket = io.connect();
 
     module.exports = {
+        ws: socket,
 
         init: function(){
             help.msg('正在连接服务器，请稍后...', 'sys', 'tip');
             socket.on('connect', function(){
-                help.msg('已连接！', 'sys', 'tip');
+                help.msg('已连接到大厅！', 'sys', 'tip');
                 $sendBtn.attr('disabled', false);
             });
             socket.on('error', function(){
@@ -36,6 +37,17 @@
                 help.msg(data.id + ' 加入了游戏！', 'sys', 'tip');
                 //todo : 更新在线列表 data.list
             });
+            socket.on('choose-status', function(data){
+                console.log(data);
+                if(data.isRedSelected){
+                    $('#redName').text(data.redPlayerName);
+                    $('#redBtn').remove();
+                }
+                if(data.isBlackSelected){
+                    $('#blackName').text(data.blackPlayerName);
+                    $('#blackBtn').remove();
+                }
+            });
             socket.on('logout', function(data){
                 help.msg(data.id + ' 退出了游戏！', 'sys', 'tip');
                 //todo : 更新在线列表 data.list
@@ -46,19 +58,16 @@
             socket.on('rename', function(data){
                 help.msg(data.id + ' 已改名为：' + data.newName, 'sys', 'tip');
             });
-            socket.on('choose-type', function(resData){
-                var camp = resData.type;
+            socket.on('assign-status', function(resData){
+                var camp = resData.status;
                 help.msg(resData.message, 'sys', 'tip');
-                console.log(camp);
                 if(camp !== "viewer"){
                     //todo : 由系统分配持棋颜色
                     data.player.type = camp;
                     data.player.canMove = (camp == 'red');
-                    board.createChess(camp, chess);
                 }else{ //观看者默认以红棋视角观看，并且禁止走棋
                     data.player.type = 'red';
                     data.player.canMove = false;
-                    board.createChess('red', chess);
                 }
             });
             socket.on('other-choose-type', function(resData){
@@ -106,7 +115,7 @@
             help.msg(' 您已经改名为：' + newData.name, 'sys', 'tip');
         }else{
             socket.send(JSON.stringify(data));
-            help.msg(' 说：' + text, '你', 'user');
+            help.msg('说：' + text, '你', 'user');
         }
 
     }

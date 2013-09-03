@@ -36,7 +36,7 @@
             bgColor: '#D1BF9A',
             stroke: {
                 "stroke": "black",
-                "stroke-width": .3
+                "stroke-width":.5
             },
             outLine: {
                 "stroke-width": 1

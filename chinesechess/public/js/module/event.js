@@ -16,22 +16,22 @@
     var socket = require('./socket');
 
     var rectUnit = data.rectUnit;
-    var $panel = $('#panel');
+    var $enterBtn = $('#enterBtn');
+    var $nickName = $('#nickName');
+    var $playerChoose = $('#playerChoose');
     var $sendBtn = $('#sendBtn');
     var $input = $('#input');
 
     module.exports = {
 
         init: function(){
-            $panel.click(function(e){
-                var _this = $(e.target);
-                if(_this.attr('type') == 'radio'){
-                    help.disableRadio();
-                    socket.sendAction({
-                        action: 'choose-type',
-                        type: _this.val()
-                    });
-                }
+            $enterBtn.click(function(){
+                var nickName = help.filterHtml($.trim($nickName.val()));
+                !!nickName && socket.ws.emit('join', nickName);
+            });
+            $playerChoose.find('button').click(function(){
+                $(this).text('已准备').attr('disabled', true);
+                socket.ws.emit('choose', $(this).val());
             });
             $sendBtn.click(function(){
                 var text = $.trim($input.val());

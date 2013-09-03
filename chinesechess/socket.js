@@ -12,7 +12,9 @@ var io = require('socket.io');
 var userList = {
     length: 0,
     isRedSelected: false,
-    isBlackSelected: false
+    isBlackSelected: false,
+    redPlayerName: '',
+    blackPlayerName: ''
 };
 
 function start(server){
@@ -24,6 +26,13 @@ function start(server){
             name: null,         //昵称
             status: 'viewer'    //身份 viewer|red|black
         };
+
+        socket.emit('choose-status', {
+            isRedSelected: userList.isRedSelected,
+            isBlackSelected: userList.isBlackSelected,
+            redPlayerName: userList.redPlayerName,
+            blackPlayerName: userList.blackPlayerName
+        });
 
         //有新用户加入广播, 并发送新的用户列表
         socket.broadcast.emit('join', {
@@ -48,42 +57,20 @@ function start(server){
             });
         });
 
+        socket.on('choose', function(camp){
+            var id = socket.id;
+            if(camp === 'red'){
+                userList.isRedSelected = true;
+                userList.redPlayerName = id;
+            }
+            if(camp === 'black'){
+                userList.isBlackSelected = true;
+                userList.blackPlayerName = id;
+            }
+        });
+
         //用户动作
         var actionMap = {
-            'choose-type': function(data){
-                var type = data.type;
-                var resData = {
-                    type: 'viewer',
-                    message: '你选择了' + type + '方'
-                };
-                console.log(userList.isRedSelected, '------------------------', userList.isBlackSelected);
-                resData.type = type;
-                if(type == 'viewer'){
-                    resData.message = socket.id + '选择了观看者！';
-                    socket.broadcast.emit('other-choose-type', resData);
-                }else{
-                    if(userList.isRedSelected && userList.isBlackSelected){
-                        resData.type = 'viewer';
-                        resData.message = '对不起，请您等待下一局！';
-                    }
-                    if(type == 'red' && userList.isRedSelected && !userList.isBlackSelected){
-                        resData.type = 'black';
-                        resData.message = '对不起，红方已有人选择，系统将您分配至黑方！';
-                        userList.isBlackSelected = true;
-                    }
-                    if(type == 'black' && userList.isBlackSelected && !userList.isRedSelected){
-                        resData.type = 'red';
-                        resData.message = '对不起，黑方已有人选择，系统将您分配至红方！';
-                        userList.isRedSelected = true;
-                    }
-                    socket.broadcast.emit('other-choose-type', {
-                        type: resData.type,
-                        message: socket.id + '选择了' + resData.type + '方！'
-                    });
-                }
-                socket.emit('choose-type', resData);
-            },
-
             'speak': function(data){
                 var name = userList[socket.id].name;
                 socket.broadcast.emit('speak', {

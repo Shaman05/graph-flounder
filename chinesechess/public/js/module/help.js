@@ -155,6 +155,10 @@
                 x2: p2 && Math.floor((p2.attr('x') - offsetX)/baseSize),
                 y2: p2 && Math.floor((p2.attr('y') - offsetY)/baseSize)
             };
+        },
+
+        filterHtml: function(html){
+            return html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
     };

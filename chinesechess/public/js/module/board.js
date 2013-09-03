@@ -18,7 +18,6 @@
 
     var map = data.map;
     var chess = data.chess;
-    var camp = data.player.type;
     var baseSize = 50;
     var chessSize = baseSize - 10;
     var u2 = baseSize * 2;
@@ -41,31 +40,22 @@
 
         init: function(){
             drawBoard(baseSize);
+            socket.init();
             event.panelEvent();
+            event.init();
             //todo : 由系统返回用户身份
             //如果当前玩家是黑色则翻转棋盘
-            if(camp === 'black'){
+            /*if(data.player.type === 'black'){
                 map.reverse();
             }
             drawNumber();
             createChessNode();
-            help.printMap();
-            socket.init();
-            event.init();
+            help.printMap();*/
         }
 
     };
 
     function drawBoard(u1){
-        $('#chessBoard').css({
-            height: u11 + 'px',
-            width: u17 + 'px',
-            backgroundColor: data.style.bgColor,
-            top: '50%',
-            left: '50%',
-            marginTop: - u11/2 + 'px',
-            marginLeft: - u14/2 + 'px'
-        });
         var dx = u1 + 5;
         var dy = u1 + 5;
         var strokeStyle = style.stroke;
@@ -164,7 +154,7 @@
         var numArr = data.text.Num;
         var topNum, bottomNum;
         var numberStyle = data.style.number;
-        if(camp == 'red'){
+        if(data.player.type == 'red'){
             topNum = numArr[0];
             bottomNum = numArr[1];
         }else{ //黑方数字反转
