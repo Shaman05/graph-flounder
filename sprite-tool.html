@@ -4,7 +4,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>精灵图片定位工具</title>
     <style type="text/css">
-        .setting{padding: 5px 0; font-size: 12px;}
+        body{padding-left: 200px; margin: 10px;}
+        .setting{font-size: 12px; float: left; margin-left: -200px; width: 200px;}
         .setting p{margin: 0;}
         .setting input[type=text]{width: 40px;}
         .area{border: 1px solid brown; float: left; position: relative; overflow:hidden;}
@@ -16,10 +17,15 @@
     </style>
 </head>
 <body>
-    <div class="setting">
-        <p>设定画布大小 <label>W:<input type="text" id="cw" value="800"/></label> <label>H:<input type="text" id="ch" value="500"/></label></p>
-        <p>选择精灵图片(也可以将图片拖拽到矩形区域) <input id="files" type="file" multiple/>
+    <div class="setting" id="setting">
+        <p>设置画布大小: <br><label>W<input type="text" id="cw" value="800"/></label> <label>H<input type="text" id="ch" value="500"/></label> <button id="reset">reset</button></p>
+        <br>
+        <p>"Ctrl" + "+" 可放大查看坐标</p>
+        <br>
+        <p>选择精灵图片:<br><input id="files" type="file" multiple/>(也可以将图片拖拽到矩形区域)</p>
         <p id="fileInfo"></p>
+        <br>
+        <div id="record"></div>
     </div>
     <div class="area" id="area">
         <canvas id="paper"></canvas>
@@ -27,26 +33,38 @@
         <div class="line verLine" id="verLine"></div>
         <div class="outPut" id="outPut"></div>
     </div>
+    <div style="clear: both"></div>
     <script type="text/javascript">
     window.onload = function(){
+        var inputW = $id("cw");
+        var inputH = $id("ch");
         var outPut = $id("outPut");
         var inputFile = $id('files');
         var fileInfo = $id('fileInfo');
+        var record = $id("record");
         var area = $id("area");
         var canvas = $id("paper");
         var horLine = $id("horLine");
         var verLine = $id("verLine");
         var ctx = canvas.getContext("2d");
         var floor = Math.floor;
-        canvas.width = $id("cw").value;
-        canvas.height = $id("ch").value;
+        canvas.width = inputW.value;
+        canvas.height = inputH.value;
 
+        $id("reset").onclick = function(){
+            canvas.width = inputW.value;
+            canvas.height = inputH.value;
+            var records = record.getElementsByTagName("p");
+            for(var i = 0; i < records.length; i++){
+                record.removeChild(records[i]);
+            }
+        };
 
         function handleFileSelect(evt) {
             //选择多个文件的时候，只有最后选取的文件有效，并且必须是图片
             var files = evt.target.files;
             var f = files[files.length - 1];
-            fileInfo.innerHTML = "文件名：" + f.name + ", 类型：" + (f.type || "N/A") + ", 大小：" + f.size + "bytes, 修改时间：" + f.lastModifiedDate.toLocaleDateString();
+            fileInfo.innerHTML = "文件名：" + f.name + "<br>类型：" + (f.type || "N/A") + "<br>大小：" + f.size + "bytes<br>修改时间：" + f.lastModifiedDate.toLocaleDateString();
             clearPaper();
             clearLine();
             drawSelectImg(f);
@@ -121,7 +139,9 @@
             var x = e.clientX;
             var y = e.clientY;
             var c = windowToCanvas(x, y);
-            console.log(c.x, c.y);
+            var p = document.createElement("p");
+            p.innerHTML = "获取坐标值 x:" + c.x + ", y:" + c.y;
+            record.appendChild(p);
         });
 
         function $id(id){
