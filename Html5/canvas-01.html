@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+    <style type="text/css">
+        body{margin: 0; background: #04071c;}
+        #map{height: 420px; width: 300px; border: 1px solid #bbade9; position: absolute; left: 50%; top: 50px; margin-left: -151px;}
+        #fps{display: inline-block; width: 14px; text-align: right;}
+        .fps{position: absolute; right: 0; top: 0; width: 40px; font-size: 12px;}
+        canvas{background: #FFFFFF;}
+    </style>
+</head>
+<body>
+    <div id="map">
+        <span class="fps">FPS:<span id="fps">0</span></span>
+        <canvas id="paper"></canvas>
+    </div>
+    <script type="text/javascript">
+        var canvas = document.getElementById("paper");
+        var ctx = canvas.getContext("2d");
+
+        //设置游戏区域
+        canvas.width = 300;
+        canvas.height = 420;
+
+        var isBgOk = false;
+        //绘制背景
+        preLoadImg("./image/background.png", function(){
+            ctx.drawImage(this, 0, 0, 300, 420);
+            isBgOk = true;
+        });
+
+        var isPauseOk = false;
+        //绘制暂停按钮
+        preLoadImg("./image/pause.png", function(){
+            ctx.drawImage(this, 2, 2, 20, 20);
+            isPauseOk = true
+        });
+
+
+        //输出得分
+        var t = setInterval(function(){
+            if(isBgOk && isPauseOk){
+                ctx.font = "16pt Tekton pro";
+                ctx.fillStyle = "#363636";
+                ctx.fillText("26539800", 26, 20);
+                clearInterval(t);
+            }
+        }, 0);
+
+        //一些方法
+        function preLoadImg(url, callback){
+            var img = new Image();
+            img.src = url;
+            if(img.complete){
+                callback.call(img);
+                return;
+            }
+            img.onload = function(){
+                callback.call(img);
+            }
+        }
+    </script>
+</body>
+</html>
