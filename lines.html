@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>辅助线</title>
+    <style type="text/css">
+        body{padding: 50px;}
+        canvas{border: 1px solid brown;}
+    </style>
+</head>
+<body>
+    <canvas id="paper"></canvas>
+    <div id="outPut"></div>
+    <script type="text/javascript">
+        var outPut = document.getElementById("outPut");
+        var canvas = document.getElementById("paper");
+        var ctx = canvas.getContext("2d");
+        var floor = Math.floor;
+        var isMouseDown = false;
+        canvas.width = 500;
+        canvas.height = 400;
+
+        canvas.addEventListener("mousedown", function(e){
+            isMouseDown = true;
+        });
+
+        canvas.addEventListener("mouseup", function(e){
+            isMouseDown = false;
+        });
+
+        document.addEventListener("mousemove", function(e){
+            if(!isMouseDown)return;
+            var x = e.clientX;
+            var y = e.clientY;
+            var c = windowToCanvas(x, y);
+            var cx = c.x;
+            var cy = c.y;
+            //清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            //超出范围不处理
+            if(cx > canvas.width || cy > canvas.height || cx < 0 || cy < 0){
+                return;
+            }
+            //设置辅助线样式
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 0.5;
+            //画横线
+            drawHorLine(cx, cy);
+            //画竖线
+            drawVerLine(cx, cy);
+            //输出坐标
+            upDateOutPut(cx, cy);
+        });
+
+        function windowToCanvas(x, y){
+            var cBox = canvas.getBoundingClientRect();
+            return {
+                x: x - cBox.left * (canvas.width/cBox.width),
+                y: y - cBox.top * (canvas.height/cBox.height)
+            }
+        }
+
+        function upDateOutPut(x, y){
+            outPut.innerHTML = "(x:" + floor(x) + " , y:" + floor(y) + ")";
+        }
+
+        function drawHorLine(x, y){
+            ctx.beginPath();
+            ctx.moveTo(0, y + 0.5);
+            ctx.lineTo(canvas.width, y + 0.5);
+            ctx.stroke();
+        }
+
+        function drawVerLine(x, y){
+            ctx.beginPath();
+            ctx.moveTo(x + 0.5, 0);
+            ctx.lineTo(x + 0.5, canvas.height);
+            ctx.stroke();
+        }
+    </script>
+</body>
+</html>
