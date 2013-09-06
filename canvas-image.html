@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+</head>
+<body>
+    <img id="img" src="./image/black_che.png" alt="" style="display: none;"/>
+    <canvas id="paper" style="border: 1px solid coral"></canvas>
+    <script type="text/javascript">
+        var canvas = document.getElementById("paper");
+        var ctx = canvas.getContext("2d");
+        //var img = ctx.drawImage(document.getElementById("img"), 0, 0);
+        var img = new Image();
+        img.src = "./image/red_che.png";
+        img.onload = function(){
+            ctx.drawImage(this, 0, 10);
+        };
+    </script>
+</body>
+</html>

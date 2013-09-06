@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>精灵图片定位工具</title>
+    <style type="text/css">
+        body{padding-left: 200px; margin: 10px;}
+        .setting{font-size: 12px; float: left; margin-left: -200px; width: 200px;}
+        .setting p{margin: 0;}
+        .setting input[type=text]{width: 40px;}
+        .area{border: 1px solid brown; float: left; position: relative; overflow:hidden;}
+        .area canvas{float: left;}
+        .line{background: blue; position: absolute; z-index: 999;}
+        .horLine{height: 1px; width: 100%; left: 0; top: -2px;}
+        .verLine{height: 100%; width: 1px; left: -2px; top: 0;}
+        .outPut{position: absolute; font-size: 12px; height: 30px; width: 100px; background: #FFF; line-height: 30px; text-align: center; opacity: 0.7;}
+    </style>
+</head>
+<body>
+    <div class="setting" id="setting">
+        <p>设置画布大小: <br><label>W<input type="text" id="cw" value="800"/></label> <label>H<input type="text" id="ch" value="500"/></label> <button id="reset">reset</button></p>
+        <br>
+        <p>"Ctrl" + "+" 可放大查看坐标</p>
+        <br>
+        <p>选择精灵图片:<br><input id="files" type="file" multiple/>(也可以将图片拖拽到矩形区域)</p>
+        <p id="fileInfo"></p>
+        <br>
+        <div id="record"></div>
+    </div>
+    <div class="area" id="area">
+        <canvas id="paper"></canvas>
+        <div class="line horLine" id="horLine"></div>
+        <div class="line verLine" id="verLine"></div>
+        <div class="outPut" id="outPut"></div>
+    </div>
+    <div style="clear: both"></div>
+    <script type="text/javascript">
+    window.onload = function(){
+        var inputW = $id("cw");
+        var inputH = $id("ch");
+        var outPut = $id("outPut");
+        var inputFile = $id('files');
+        var fileInfo = $id('fileInfo');
+        var record = $id("record");
+        var area = $id("area");
+        var canvas = $id("paper");
+        var horLine = $id("horLine");
+        var verLine = $id("verLine");
+        var ctx = canvas.getContext("2d");
+        var floor = Math.floor;
+        canvas.width = inputW.value;
+        canvas.height = inputH.value;
+
+        $id("reset").onclick = function(){
+            canvas.width = inputW.value;
+            canvas.height = inputH.value;
+            var records = record.getElementsByTagName("p");
+            for(var i = 0; i < records.length; i++){
+                record.removeChild(records[i]);
+            }
+        };
+
+        function handleFileSelect(evt) {
+            //选择多个文件的时候，只有最后选取的文件有效，并且必须是图片
+            var files = evt.target.files;
+            var f = files[files.length - 1];
+            fileInfo.innerHTML = "文件名：" + f.name + "<br>类型：" + (f.type || "N/A") + "<br>大小：" + f.size + "bytes<br>修改时间：" + f.lastModifiedDate.toLocaleDateString();
+            clearPaper();
+            clearLine();
+            drawSelectImg(f);
+        }
+        inputFile.addEventListener("change", handleFileSelect, false);
+
+        area.addEventListener("drop", handleDrop, false);
+        area.addEventListener("dragover", handleDrop, false);
+        area.addEventListener("dragenter", handleDrop, false);
+        function handleDrop(evt){
+            evt.stopPropagation();
+            evt.preventDefault();
+            if(evt.type == "drop"){
+                var dt = evt.dataTransfer;
+                handleFile(dt.files[0]);
+            }
+        }
+        function handleFile(file){
+            if(file == null)return;
+            //alert(file.type);//获取文件的MIME类型
+            //alert(file.size);//获取文件的Size大小
+            var reader = new FileReader();
+            reader.onerror = handleFileError;
+            reader.onload = handleFileLoad;
+            reader.onloadend = handleFileLoadEnd;
+            reader.onprogress = handleFileProgress;
+            reader.readAsBinaryString(file);
+        }
+
+        function handleFileProgress(evt){
+            //载入进度显示
+            //进度获取evt.loaded, evt.total
+            //console.log(["progress", evt.loaded, evt.total]);
+        }
+        function handleFileLoad(evt){
+            //载入完成
+            //var result = evt.currentTarget.result;
+            //console.log(result);
+            //返回的二进制以字符串形式存在，去数据采用result.charCodeAt(i)
+            //获取一部分数据
+            //result.substring(0, 100);//获取前100个字节数据
+        }
+        function handleFileError(evt){
+            //载入错误
+            //console.log(evt.currentTarget.error);
+        }
+        function handleFileLoadEnd(evt){
+            //载入结束(不管是成功，还是失败)
+            //console.log(evt.currentTarget);
+        }
+
+        document.addEventListener("mousemove", function(e){
+            var x = e.clientX;
+            var y = e.clientY;
+            var c = windowToCanvas(x, y);
+            var cx = c.x;
+            var cy = c.y;
+            //超出范围不处理
+            if(cx > canvas.width || cy > canvas.height || cx < 0 || cy < 0){
+                clearLine();
+                return;
+            }
+            //画横线
+            drawHorLine(cy);
+            //画竖线
+            drawVerLine(cx);
+            //输出坐标
+            upDateOutPut(cx, cy);
+        });
+
+        area.addEventListener("click", function(e){
+            var x = e.clientX;
+            var y = e.clientY;
+            var c = windowToCanvas(x, y);
+            var p = document.createElement("p");
+            p.innerHTML = "获取坐标值 x:" + c.x + ", y:" + c.y;
+            record.appendChild(p);
+        });
+
+        function $id(id){
+            return document.getElementById(id);
+        }
+
+        function windowToCanvas(x, y){
+            var cBox = canvas.getBoundingClientRect();
+            return {
+                x: x - cBox.left * (canvas.width/cBox.width),
+                y: y - cBox.top * (canvas.height/cBox.height)
+            }
+        }
+
+        function clearPaper(){
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function clearLine(){
+            horLine.style.top = "-2px";
+            verLine.style.left = "-2px";
+            upDateOutPut(-100, -100);
+        }
+
+        function upDateOutPut(x, y){
+            outPut.style.left = (canvas.width - x < 100 ? x - 100 : x) + "px";
+            outPut.style.top = (canvas.height - y < 30 ? y - 30 : y)+ "px";
+            outPut.innerHTML = "(x:" + floor(x) + " , y:" + floor(y) + ")";
+        }
+
+        function drawHorLine(y){
+            horLine.style.top = y + "px";
+        }
+
+        function drawVerLine(x){
+            verLine.style.left = x + "px";
+        }
+
+        function drawSelectImg(file){
+            var reader = new FileReader();
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    var img = new Image();
+                    img.alt = theFile.name;
+                    img.src = e.target.result;
+                    img.onload = function(){
+                        if(img.width > canvas.width){
+                            canvas.width = img.width;
+                        }else{
+                            canvas.width = 800;
+                        }
+                        if(img.height > canvas.height){
+                            canvas.height = img.height;
+                        }else{
+                            canvas.height = 500;
+                        }
+                        ctx.drawImage(img, 0, 0);
+                    }
+                };
+            })(file);
+            reader.readAsDataURL(file);
+        }
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>canvas clock</title>
+</head>
+<body>
+    <canvas id="paper"></canvas>
+    <script type="text/javascript">
+        window.onload = function(){
+            var paper = document.getElementById("paper");
+            var ctx = paper.getContext("2d");
+
+            //ctx.fillStyle = "#FF3300";
+            //c.strokeStyle = 30;
+
+            ctx.fillText("shaman", 0, 0);
+        }
+    </script>
+</body>
+</html>
