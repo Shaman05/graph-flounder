@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>多canvas测试</title>
+    <style type="text/css">
+        canvas{position: absolute; left: 10px; top: 10px; border: 2px solid #000000;}
+    </style>
+</head>
+<body>
+    <canvas id="stage-bg"></canvas>
+    <canvas id="stage-fight"></canvas>
+    <script type="text/javascript">
+        var MAP_W = 320;
+        var MAP_H = 500;
+        var imgSize_bg_W = 480;
+        var imgSize_bg_H = 853;
+        var Timer = null; //全局定时器
+        var Timer_Bg = null;
+        var imgBuffer = {};
+        var baseUrl = "./image/";
+        var imgBg = "bg.jpg";
+        var stageBg = document.getElementById("stage-bg").getContext("2d");
+        var stageFight = document.getElementById("stage-fight").getContext("2d");
+        stageBg.canvas.width = MAP_W;
+        stageBg.canvas.height = MAP_H;
+        stageFight.canvas.width = MAP_W;
+        stageFight.canvas.height = MAP_H;
+
+
+        //背景图动画
+        var spriteBg = function(){
+            var offset = 1;
+            var scaleH = imgSize_bg_H / MAP_H;
+            return function(){
+                stageBg.clearRect(0, 0, MAP_W, MAP_H);
+                stageBg.drawImage(imgBuffer.bg, 0, imgSize_bg_H - scaleH * offset, imgSize_bg_W, scaleH * offset, 0, 0, MAP_W, offset);
+                stageBg.drawImage(imgBuffer.bg, 0, 0, imgSize_bg_W, imgSize_bg_H, 0, offset, MAP_W, MAP_H);
+                offset = offset >= MAP_H ? 1 : offset + 1;
+            }
+        };
+
+        //test
+        var spriteTest = function(){
+            var offset = 0;
+            stageFight.fillStyle = "blue";
+            return function(){
+                stageFight.clearRect(100, offset, 5, 20);
+                offset = offset > MAP_H ? 0 : offset + 1;
+                stageFight.fillRect(100, offset, 5, 20);
+            }
+        };
+
+        //定时器
+        Timer = {
+            timer: null,
+            commonFps: 5,
+            count: 0,
+            sprites: [],
+            isPaused: false,
+            addSprites: function(spriteName, sprite, fps){
+                this.sprites.push({n: spriteName, s: sprite, f: fps});
+            },
+            removeSprte: function(spriteName){
+                var sprites = this.sprites;
+                for(var i = 0, len = sprites.length; i < len; i++){
+                    if(spriteName === sprites[i].n){
+                        sprites.splice(i, 1);
+                        break;
+                    }
+                }
+            },
+            run: function(){
+                var that = this;
+                var sprites = that.sprites;
+                if(!that.isPaused){
+                    that.timer = setInterval(function(){
+
+                        for(var i = 0, len = sprites.length; i < len; i++){
+                            var sprite = sprites[i];
+                            if(that.count % sprite.f === 0){
+                                sprite.s();
+                            }
+                        }
+                        that.count += that.commonFps;
+                    }, that.commonFps);
+                }
+            },
+            toggle: function(){
+                this.isPaused = !this.isPaused;
+            }
+        };
+
+        //入口
+        loadImg({bg: imgBg}, function(){
+            //添加一个背景图动画
+            Timer.addSprites("bg", spriteBg(), 40);
+            Timer.addSprites("test", spriteTest(), 5);
+            //启动定时器
+            Timer.run();
+        });
+
+
+        function loadImg(img, callback){
+            var loaded = 0;
+            img.length = 0;
+            for(var name in img){
+                if(img.hasOwnProperty(name) && name !== "length"){
+                    img.length ++;
+                    var c = new Image();
+                    c.src = baseUrl + img[name];
+                    imgBuffer[name] = c;
+                    c.onload = function(){
+                        loaded ++;
+                        if(loaded === img.length){
+                            callback();
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
