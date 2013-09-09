@@ -13,7 +13,7 @@
         .line{background: blue; position: absolute; z-index: 999;}
         .horLine{height: 1px; width: 100%; left: 0; top: -2px;}
         .verLine{height: 100%; width: 1px; left: -2px; top: 0;}
-        .outPut{position: absolute; font-size: 12px; height: 30px; width: 100px; background: #FFF; line-height: 30px; text-align: center; opacity: 0.7;}
+        .outPut{position: absolute; font-size: 12px; height: 30px; width: 100px; background: #FFF; line-height: 30px; text-align: center; opacity: 0.7; left: -100px; top: -100px;}
     </style>
 </head>
 <body>
@@ -50,10 +50,12 @@
         var floor = Math.floor;
         canvas.width = inputW.value;
         canvas.height = inputH.value;
+        resetBg();
 
         $id("reset").onclick = function(){
             canvas.width = inputW.value;
             canvas.height = inputH.value;
+            resetBg();
             var records = record.getElementsByTagName("p");
             for(var i = 0; i < records.length; i++){
                 record.removeChild(records[i]);
@@ -148,6 +150,23 @@
             return document.getElementById(id);
         }
 
+        function resetBg(){
+            var bg = new Image();
+            bg.src = "./image/transparent.png";
+            if(bg.complete){
+                drawBg(bg);
+            }else{
+                bg.onload = function(){
+                    drawBg(bg);
+                }
+            }
+        }
+
+        function drawBg(img){
+            ctx.fillStyle = ctx.createPattern(img, "repeat");
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        }
+
         function windowToCanvas(x, y){
             var cBox = canvas.getBoundingClientRect();
             return {
@@ -198,6 +217,7 @@
                         }else{
                             canvas.height = 500;
                         }
+                        resetBg();
                         ctx.drawImage(img, 0, 0);
                     }
                 };
