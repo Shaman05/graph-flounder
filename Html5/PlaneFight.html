@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+    <style type="text/css">
+        body{margin: 0; background: #04071c;}
+        #map{border: 1px solid #bbade9; position: absolute; left: 50%; top: 50px; margin-left: -161px; font-size: 0; width: 320px; height: 480px; background: #FFF;}
+        #fps{display: inline-block; width: 20px; height: 16px; line-height: 16px;}
+        .fps{position: absolute; right: 0; top: 0; width: 46px; font-size: 12px;}
+        canvas{position: absolute; left: 0; top: 0;}
+    </style>
+</head>
+<body>
+    <div id="map">
+        <canvas id="bg"></canvas>
+        <canvas id="fighter"></canvas>
+        <canvas id="panel"></canvas>
+        <span class="fps">FPS <span id="fps"></span></span>
+    </div>
+    <script type="text/javascript" src="./js/sea.js"></script>
+    <script type="text/javascript">
+        seajs.use("app", function(app){
+            app.init();
+        })
+    </script>
+</body>
+</html>

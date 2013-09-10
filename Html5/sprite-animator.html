@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>精灵对象</title>
+</head>
+<body>
+<canvas id="paper"></canvas>
+<script type="text/javascript" src="../js/sea.js"></script>
+<script type="text/javascript" src="../js/config.js"></script>
+<script type="text/javascript">
+    seajs.use("Sprite", function(sprite){
+        var context = document.getElementById("paper").getContext("2d");
+        context.canvas.width = 600;
+        context.canvas.height = 400;
+        var RADIUS = 75;
+        var painter = {
+            paint: function(sprite, context){
+                context.beginPath();
+                context.arc(sprite.left + sprite.width/2, sprite.top + sprite.height/2, RADIUS, 0, Math.PI*2, false);
+                context.clip();
+                context.shadowColor = "rgba(0,0,0)";
+                context.shadowOffsetX = -4;
+                context.shadowOffsetY = -4;
+                context.shadowBlur = 8;
+                context.lineWidth = 2;
+                context.strokeStyle = "rgba(100,100,195)";
+                context.fillStyle = "rgba(30,144,255,0.15)";
+                context.fill();
+                context.stroke();
+            }
+        };
+        var ball = new sprite("ball", painter);
+        ball.left = 320;
+        ball.top = 160;
+        ball.paint(context);
+    })
+</script>
+</body>
+</html>

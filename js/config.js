@@ -7,7 +7,7 @@
  */
 
 ;seajs.config({
-    base: './js/module/',
+    base: '../js/module/',
     debug: true,
     charset: 'utf-8'
 });
