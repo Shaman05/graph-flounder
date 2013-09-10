@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>多canvas测试</title>
+    <style type="text/css">
+        .map{border: 2px solid #000000; position: relative; width: 320px; height: 500px;}
+        canvas{position: absolute; left: 0; top: 0; }
+    </style>
+</head>
+<body>
+    <div class="map">
+        <canvas id="stage-bg"></canvas>
+        <canvas id="stage-fight"></canvas>
+    </div>
+    <button id="pause">Pause</button>
+    <button id="add">add item</button>
+    <button id="delete">delete item</button>
+    <script type="text/javascript">
+        var MAP_W = 320;
+        var MAP_H = 500;
+        var imgSize_bg_W = 480;
+        var imgSize_bg_H = 853;
+        var Timer = null; //全局定时器
+        var Timer_Bg = null;
+        var imgBuffer = {};
+        var baseUrl = "./image/";
+        var imgBg = "bg.jpg";
+        var stageBg = document.getElementById("stage-bg").getContext("2d");
+        var stageFight = document.getElementById("stage-fight").getContext("2d");
+        var pauseBtn = document.getElementById("pause");
+        var addBtn = document.getElementById("add");
+        var deleteBtn = document.getElementById("delete");
+        stageBg.canvas.width = MAP_W;
+        stageBg.canvas.height = MAP_H;
+        stageFight.canvas.width = MAP_W;
+        stageFight.canvas.height = MAP_H;
+
+
+        //背景图动画
+        var spriteBg = function(){
+            var offset = 1;
+            var scaleH = imgSize_bg_H / MAP_H;
+            return function(){
+                stageBg.clearRect(0, 0, MAP_W, MAP_H);
+                stageBg.drawImage(imgBuffer.bg, 0, imgSize_bg_H - scaleH * offset, imgSize_bg_W, scaleH * offset, 0, 0, MAP_W, offset);
+                stageBg.drawImage(imgBuffer.bg, 0, 0, imgSize_bg_W, imgSize_bg_H, 0, offset, MAP_W, MAP_H);
+                offset = offset >= MAP_H ? 1 : offset + 1;
+            }
+        };
+
+        //test
+        var spriteTest = function(){
+            var offset = 0;
+            var left = Math.floor(Math.random() * 320);
+            stageFight.fillStyle = "blue";
+            return function(){
+                stageFight.clearRect(left, offset, 5, 20);
+                offset = offset > MAP_H ? 0 : offset + 1;
+                stageFight.fillRect(left, offset, 5, 20);
+            }
+        };
+
+        //定时器
+        Timer = {
+            timer: null,
+            commonFps: 5,
+            count: 0,
+            sprites: [],
+            isPaused: false,
+            addSprites: function(spriteName, sprite, fps){
+                this.sprites.push({n: spriteName, s: sprite, f: fps});
+            },
+            removeSprte: function(spriteName){
+                var sprites = this.sprites;
+                for(var i = 0, len = sprites.length; i < len; i++){
+                    if(spriteName === sprites[i].n){
+                        stageFight.clearRect(0, 0, MAP_W, MAP_H);
+                        sprites.splice(i, 1);
+                        break;
+                    }
+                }
+            },
+            run: function(){
+                var that = this;
+                var sprites = that.sprites;
+                that.timer = setInterval(function(){
+                    if(!that.isPaused){
+                        for(var i = 0, len = sprites.length; i < len; i++){
+                            var sprite = sprites[i];
+                            if(that.count % sprite.f === 0){
+                                sprite.s();
+                            }
+                        }
+                        that.count += that.commonFps;
+                    }
+                }, that.commonFps);
+            },
+            toggle: function(){
+                this.isPaused = !this.isPaused;
+                //todo 改变图标
+            }
+        };
+
+        //入口
+        loadImg({bg: imgBg}, function(){
+            //添加一个背景图动画
+            Timer.addSprites("bg", spriteBg(), 35);
+            Timer.addSprites("testRect", spriteTest(), 10);
+            //启动定时器
+            Timer.run();
+            //暂停
+            pauseBtn.onclick = function(){
+                Timer.toggle();
+            };
+            //增加活动对象
+            addBtn.onclick = function(){
+                Timer.addSprites("enemy", spriteTest(), Math.floor(Math.random() * 10) * 5);
+            };
+            //删除一个最后一个活动对象
+            deleteBtn.onclick = function(){
+                Timer.removeSprte("enemy")
+            }
+        });
+
+
+        function loadImg(img, callback){
+            var loaded = 0;
+            img.length = 0;
+            for(var name in img){
+                if(img.hasOwnProperty(name) && name !== "length"){
+                    img.length ++;
+                    var c = new Image();
+                    c.src = baseUrl + img[name];
+                    imgBuffer[name] = c;
+                    c.onload = function(){
+                        loaded ++;
+                        if(loaded === img.length){
+                            callback();
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
