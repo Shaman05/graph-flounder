@@ -4,12 +4,16 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>多canvas测试</title>
     <style type="text/css">
-        canvas{position: absolute; left: 10px; top: 10px; border: 2px solid #000000;}
+        .map{border: 2px solid #000000; position: relative; width: 320px; height: 500px;}
+        canvas{position: absolute; left: 0; top: 0; }
     </style>
 </head>
 <body>
-    <canvas id="stage-bg"></canvas>
-    <canvas id="stage-fight"></canvas>
+    <div class="map">
+        <canvas id="stage-bg"></canvas>
+        <canvas id="stage-fight"></canvas>
+    </div>
+    <button id="pause">Pause</button>
     <script type="text/javascript">
         var MAP_W = 320;
         var MAP_H = 500;
@@ -22,6 +26,7 @@
         var imgBg = "bg.jpg";
         var stageBg = document.getElementById("stage-bg").getContext("2d");
         var stageFight = document.getElementById("stage-fight").getContext("2d");
+        var pauseBtn = document.getElementById("pause");
         stageBg.canvas.width = MAP_W;
         stageBg.canvas.height = MAP_H;
         stageFight.canvas.width = MAP_W;
@@ -73,9 +78,8 @@
             run: function(){
                 var that = this;
                 var sprites = that.sprites;
-                if(!that.isPaused){
-                    that.timer = setInterval(function(){
-
+                that.timer = setInterval(function(){
+                    if(!that.isPaused){
                         for(var i = 0, len = sprites.length; i < len; i++){
                             var sprite = sprites[i];
                             if(that.count % sprite.f === 0){
@@ -83,21 +87,26 @@
                             }
                         }
                         that.count += that.commonFps;
-                    }, that.commonFps);
-                }
+                    }
+                }, that.commonFps);
             },
             toggle: function(){
                 this.isPaused = !this.isPaused;
+                //todo 改变图标
             }
         };
 
         //入口
         loadImg({bg: imgBg}, function(){
             //添加一个背景图动画
-            Timer.addSprites("bg", spriteBg(), 40);
-            Timer.addSprites("test", spriteTest(), 5);
+            Timer.addSprites("bg", spriteBg(), 35);
+            Timer.addSprites("test", spriteTest(), 10);
             //启动定时器
             Timer.run();
+            //暂停
+            pauseBtn.onclick = function(){
+                Timer.toggle();
+            }
         });
 
 
