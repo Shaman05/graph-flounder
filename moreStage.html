@@ -14,6 +14,8 @@
         <canvas id="stage-fight"></canvas>
     </div>
     <button id="pause">Pause</button>
+    <button id="add">add item</button>
+    <button id="delete">delete item</button>
     <script type="text/javascript">
         var MAP_W = 320;
         var MAP_H = 500;
@@ -27,6 +29,8 @@
         var stageBg = document.getElementById("stage-bg").getContext("2d");
         var stageFight = document.getElementById("stage-fight").getContext("2d");
         var pauseBtn = document.getElementById("pause");
+        var addBtn = document.getElementById("add");
+        var deleteBtn = document.getElementById("delete");
         stageBg.canvas.width = MAP_W;
         stageBg.canvas.height = MAP_H;
         stageFight.canvas.width = MAP_W;
@@ -48,11 +52,12 @@
         //test
         var spriteTest = function(){
             var offset = 0;
+            var left = Math.floor(Math.random() * 320);
             stageFight.fillStyle = "blue";
             return function(){
-                stageFight.clearRect(100, offset, 5, 20);
+                stageFight.clearRect(left, offset, 5, 20);
                 offset = offset > MAP_H ? 0 : offset + 1;
-                stageFight.fillRect(100, offset, 5, 20);
+                stageFight.fillRect(left, offset, 5, 20);
             }
         };
 
@@ -70,6 +75,7 @@
                 var sprites = this.sprites;
                 for(var i = 0, len = sprites.length; i < len; i++){
                     if(spriteName === sprites[i].n){
+                        stageFight.clearRect(0, 0, MAP_W, MAP_H);
                         sprites.splice(i, 1);
                         break;
                     }
@@ -100,12 +106,20 @@
         loadImg({bg: imgBg}, function(){
             //添加一个背景图动画
             Timer.addSprites("bg", spriteBg(), 35);
-            Timer.addSprites("test", spriteTest(), 10);
+            Timer.addSprites("testRect", spriteTest(), 10);
             //启动定时器
             Timer.run();
             //暂停
             pauseBtn.onclick = function(){
                 Timer.toggle();
+            };
+            //增加活动对象
+            addBtn.onclick = function(){
+                Timer.addSprites("enemy", spriteTest(), Math.floor(Math.random() * 10) * 5);
+            };
+            //删除一个最后一个活动对象
+            deleteBtn.onclick = function(){
+                Timer.removeSprte("enemy")
             }
         });
 
