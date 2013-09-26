@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>分离轴碰撞检测</title>
+    <style type="text/css">
+        canvas{border: 1px solid brown;}
+    </style>
+</head>
+<body>
+    <canvas id="paper"></canvas>
+    <script type="text/javascript">
+        var MAP_W = 500;
+        var MAP_H = 400;
+        var abs = Math.abs;
+        var canvas = document.getElementById("paper");
+        var ctx = canvas.getContext("2d");
+        var speed = 1;
+        ctx.canvas.width = MAP_W;
+        ctx.canvas.height = MAP_H;
+
+        ctx.fillStyle = "blue";
+        setInterval(function(){
+            ctx.clearRect(0, 0, MAP_W, MAP_H);
+            drawEnemy(-1);
+            drawPlay(1);
+        }, 20);
+
+        function drawPlay(speed){
+            var px = 250;
+            var py = 300;
+            var dx = 30;
+            var dy = 80;
+            ctx.moveTo(px, py + speed);
+            ctx.lineTo(px + dx, py + dy + speed);
+            ctx.lineTo(px - dx, py + dy + speed);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawEnemy(speed){
+            var px = 260;
+            var py = 100;
+            var dx = 40;
+            var dy = 40;
+            ctx.moveTo(px, py + speed);
+            ctx.lineTo(px + dx, py - dy + speed);
+            ctx.lineTo(px - dx, py - dy + speed);
+            ctx.closePath();
+            ctx.fill();
+        }
+    </script>
+</body>
+</html>

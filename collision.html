@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>矩形碰撞检测</title>
+    <style type="text/css">
+        canvas{border: 1px solid brown;}
+    </style>
+</head>
+<body>
+    <canvas id="paper"></canvas>
+    <script type="text/javascript">
+        var MAP_W = 500;
+        var MAP_H = 400;
+        var abs = Math.abs;
+        var canvas = document.getElementById("paper");
+        var ctx = canvas.getContext("2d");
+        ctx.canvas.width = MAP_W;
+        ctx.canvas.height = MAP_H;
+
+        var objA_left = 320;
+        var objA_top = 130;
+        var objA_width = 50;
+        var objA_height = 100;
+
+        var objB_left = 50;
+        var objB_top = 160;
+        var objB_width = 50;
+        var objB_height = 60;
+
+
+
+        setInterval(function(){
+            drawObjB();
+            drawObjA();
+        }, 30);
+
+        function drawObjA(){
+            ctx.fillStyle = "blue";
+            ctx.clearRect(objA_left, objA_top, objA_width, objA_height);
+            objA_left --;
+            //检测碰撞
+            if(collisionTest(objA_left, objA_top, objA_width, objA_height, objB_left, objB_top, objB_width, objB_height)){
+                console.log("碰撞发生！");
+            }else{
+                console.log("未碰撞！");
+            }
+            ctx.fillRect(objA_left, objA_top, objA_width, objA_height);
+        }
+
+        function drawObjB(){
+            ctx.clearRect(objB_left, objB_top, objB_width, objB_height);
+            ctx.fillStyle = "red";
+            ctx.fillRect(objB_left, objB_top, objB_width, objB_height);
+        }
+
+
+        //矩形碰撞
+        function collisionTest(al, at, aw, ah, bl, bt, bw, bh){
+            var ar = al + aw;
+            var ab = at + ah;
+            var br = bl + bw;
+            var bb = bt + bh;
+            var r = abs(ar - br);
+            var b = abs(ab - bb);
+            //肯定不相交的情况
+            if(ar < bl || ab < bt || br < al || bb < at){
+                return false;
+            }
+            //相交的情况判断
+            return (r < aw || r < bw) && (b < ah || b < bh);
+        }
+    </script>
+</body>
+</html>

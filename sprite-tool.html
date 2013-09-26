@@ -4,13 +4,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>精灵图片定位工具</title>
     <style type="text/css">
-        body{padding-left: 200px; margin: 10px;}
-        .setting{font-size: 12px; float: left; margin-left: -200px; width: 200px;}
+        body{padding-left: 200px; margin: 10px; background: #c0c0c0;}
+        .setting{font-size: 12px; float: left; margin-left: -200px; width: 190px;}
         .setting p{margin: 0;}
         .setting input[type=text]{width: 40px;}
-        .area{border: 1px solid brown; float: left; position: relative; overflow:hidden;}
+        .area{border: 1px solid #000000; float: left; position: relative; overflow:hidden;}
         .area canvas{float: left;}
-        .line{background: blue; position: absolute; z-index: 999;}
+        .record{width: 100%; height: 160px; overflow: auto;}
+        .line{background: #9187ff; position: absolute; z-index: 999;}
         .horLine{height: 1px; width: 100%; left: 0; top: -2px;}
         .verLine{height: 100%; width: 1px; left: -2px; top: 0;}
         .outPut{position: absolute; font-size: 12px; height: 30px; width: 100px; background: #FFF; line-height: 30px; text-align: center; opacity: 0.7; left: -100px; top: -100px;}
@@ -25,7 +26,7 @@
         <p>选择精灵图片:<br><input id="files" type="file" multiple/>(也可以将图片拖拽到矩形区域)</p>
         <p id="fileInfo"></p>
         <br>
-        <div id="record"></div>
+        <select id="record" class="record" multiple></select>
     </div>
     <div class="area" id="area">
         <canvas id="paper"></canvas>
@@ -56,10 +57,7 @@
             canvas.width = inputW.value;
             canvas.height = inputH.value;
             resetBg();
-            var records = record.getElementsByTagName("p");
-            for(var i = 0; i < records.length; i++){
-                record.removeChild(records[i]);
-            }
+            clearRecord();
         };
 
         function handleFileSelect(evt) {
@@ -72,10 +70,10 @@
             drawSelectImg(f);
         }
         inputFile.addEventListener("change", handleFileSelect, false);
-
+        document.addEventListener("drop", function(){return false;}, false);
         area.addEventListener("drop", handleDrop, false);
-        area.addEventListener("dragover", handleDrop, false);
         area.addEventListener("dragenter", handleDrop, false);
+        area.addEventListener("dragleave", handleDrop, false);
         function handleDrop(evt){
             evt.stopPropagation();
             evt.preventDefault();
@@ -83,6 +81,13 @@
                 var dt = evt.dataTransfer;
                 handleFile(dt.files[0]);
             }
+            if(evt.type == "dragenter"){
+                this.style.boxShadow = "0 0 5px #000000";
+            }
+            if(evt.type == "dragleave"){
+                this.style.boxShadow = "";
+            }
+            return false;
         }
         function handleFile(file){
             if(file == null)return;
@@ -141,9 +146,10 @@
             var x = e.clientX;
             var y = e.clientY;
             var c = windowToCanvas(x, y);
-            var p = document.createElement("p");
-            p.innerHTML = "获取坐标值 x:" + c.x + ", y:" + c.y;
-            record.appendChild(p);
+            var option = document.createElement("option");
+            option.innerHTML = "获取坐标值 x:" + c.x + ", y:" + c.y;
+            record.appendChild(option);
+            record.selectedIndex = record.getElementsByTagName("option").length - 1;
         });
 
         function $id(id){
@@ -183,6 +189,10 @@
             horLine.style.top = "-2px";
             verLine.style.left = "-2px";
             upDateOutPut(-100, -100);
+        }
+
+        function clearRecord(){
+            record.innerHTML = "";
         }
 
         function upDateOutPut(x, y){
