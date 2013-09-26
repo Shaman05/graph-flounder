@@ -15,6 +15,7 @@
         .horLine{height: 1px; width: 100%; left: 0; top: -2px;}
         .verLine{height: 100%; width: 1px; left: -2px; top: 0;}
         .outPut{position: absolute; font-size: 12px; height: 30px; width: 100px; background: #FFF; line-height: 30px; text-align: center; opacity: 0.7; left: -100px; top: -100px;}
+        .seleteMask{border: 1px dashed #000000; background: rgba(255,255,255,0.5); height: 100px; width: 100px; top: 101px; left: 101px; position: absolute; display: none;}
     </style>
 </head>
 <body>
@@ -33,6 +34,7 @@
         <div class="line horLine" id="horLine"></div>
         <div class="line verLine" id="verLine"></div>
         <div class="outPut" id="outPut"></div>
+        <div class="seleteMask" id="selecteMask"></div>
     </div>
     <div style="clear: both"></div>
     <script type="text/javascript">
@@ -47,6 +49,7 @@
         var canvas = $id("paper");
         var horLine = $id("horLine");
         var verLine = $id("verLine");
+        var selecteMask = $id("selecteMask");
         var ctx = canvas.getContext("2d");
         var floor = Math.floor;
         canvas.width = inputW.value;
@@ -150,6 +153,7 @@
             option.innerHTML = "获取坐标值 x:" + c.x + ", y:" + c.y;
             record.appendChild(option);
             record.selectedIndex = record.getElementsByTagName("option").length - 1;
+            selecteMask.style.display = "inline";
         });
 
         function $id(id){
